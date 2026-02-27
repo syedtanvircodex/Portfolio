@@ -207,16 +207,6 @@ This portfolio is open source and available under the **MIT License**. Feel free
 
 ---
 
-## 🚀 What's Next?
-
-- [ ] Add light mode variant
-- [ ] Implement service workers for offline support
-- [ ] Create blog section with case studies
-- [ ] Add more interactive 3D experiences
-- [ ] Performance optimization (Core Web Vitals)
-
----
-
 <div align="center">
 
 **Made with ❤️ by Syed Tanvir Islam**
