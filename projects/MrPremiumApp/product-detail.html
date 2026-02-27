@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Product Details - Mr.Premium App</title>
+  <meta name="description"
+    content="Product details and offer information from Mr.Premium App. Find pricing, description and related offers." />
+  <link rel="icon" type="image/png" sizes="32x32" href="logo.png?v=4" />
+  <link rel="icon" type="image/png" sizes="16x16" href="logo.png?v=4" />
+  <link rel="shortcut icon" href="logo.png?v=4" />
+  <link rel="apple-touch-icon" href="logo.png?v=4" />
+  <!-- Canonical and product-specific Open Graph meta will be injected dynamically when the product loads -->
+  <meta property="og:type" content="product" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="stylesheet" href="assets/css/styles.css" />
+  <style>
+    .product-detail-container {
+      max-width: 1000px;
+      margin: 0 auto 40px;
+      background: var(--paper);
+      padding: 24px;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--outline);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .product-detail {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      align-items: start;
+    }
+
+    .product-image {
+      text-align: center;
+    }
+
+    .product-image img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 16px;
+      box-shadow: var(--shadow-soft);
+      background: #f8f9fb;
+      padding: 12px;
+    }
+
+    .product-info h1 {
+      font-size: 2.1rem;
+      margin-bottom: 15px;
+      color: var(--night);
+      font-family: "Fraunces", "Times New Roman", serif;
+    }
+
+    .product-price {
+      margin-bottom: 20px;
+    }
+
+    .regular-price {
+      color: #8b94a5;
+      text-decoration: line-through;
+      font-size: 1.8rem;
+      margin-right: 10px;
+    }
+
+    .discount-price {
+      font-size: 2.5rem;
+      font-weight: bold;
+      color: var(--accent);
+    }
+
+    .countdown-container {
+      background: #f7f8fb;
+      border-radius: 14px;
+      padding: 15px;
+      margin: 20px 0;
+      text-align: center;
+    }
+
+    .countdown-title {
+      color: #d64545;
+      font-size: 1rem;
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+
+    #countdown {
+      font-size: 1rem;
+      font-weight: bold;
+      color: #d64545;
+      font-family: "Plus Jakarta Sans", monospace;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .timer-box {
+      background: rgba(214, 69, 69, 0.1);
+      border-radius: 8px;
+      padding: 6px 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-width: 50px;
+    }
+
+    .timer-val {
+      font-size: 1.4rem;
+      font-weight: 800;
+      line-height: 1.1;
+      color: #d64545;
+    }
+
+    .timer-label {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      opacity: 0.8;
+      font-weight: 600;
+    }
+
+    .timer-sep {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #d64545;
+      padding-bottom: 12px;
+    }
+
+    .product-description {
+      font-size: 1.2rem;
+      line-height: 1.65;
+      color: #000000;
+      margin-bottom: 30px;
+      font-weight: 400;
+    }
+
+    .product-description h1,
+    .product-description h2,
+    .product-description h3,
+    .product-description h4,
+    .product-description h5,
+    .product-description h6 {
+      color: #000;
+      margin: 15px 0;
+      font-weight: 600;
+    }
+
+    .product-description p {
+      margin: 12px 0;
+    }
+
+    /* Horizontal scroll for other products */
+    .scroll-container {
+      width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: thin;
+      scrollbar-color: var(--accent) #f0f0f0;
+      padding: 20px 0;
+    }
+
+    .scroll-container::-webkit-scrollbar {
+      height: 8px;
+    }
+
+    .scroll-container::-webkit-scrollbar-track {
+      background: #f0f0f0;
+      border-radius: 4px;
+    }
+
+    .scroll-container::-webkit-scrollbar-thumb {
+      background: var(--accent);
+      border-radius: 4px;
+    }
+
+    .products-scroll {
+      display: flex;
+      gap: 20px;
+      padding: 0 20px;
+      width: max-content;
+    }
+
+    .products-scroll .product {
+      flex: 0 0 300px;
+      width: 300px;
+      margin: 0;
+    }
+
+    .product-category {
+      display: inline-block;
+      background: #eef1f7;
+      padding: 5px 15px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      color: var(--slate);
+      margin-bottom: 20px;
+    }
+
+    .buy-now-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      padding: 14px 22px;
+      border: 1px solid rgba(11, 87, 201, 0.2);
+      border-radius: 12px;
+      background: linear-gradient(135deg, #0b57c9, #1c3f9b);
+      color: #fff;
+      font-size: 1.06rem;
+      font-weight: 700;
+      letter-spacing: .2px;
+      box-shadow: 0 10px 24px rgba(11, 87, 201, 0.3);
+      transition: transform .12s ease, box-shadow .25s ease, background .25s ease;
+      cursor: pointer;
+      margin-bottom: 15px;
+    }
+
+    .buy-now-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 30px rgba(11, 87, 201, 0.38);
+    }
+
+    .back-btn {
+      background: #1f232b;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 12px;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      margin-bottom: 20px;
+    }
+
+    .back-btn:hover {
+      background: #2b313b;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: #666;
+    }
+
+    .error {
+      text-align: center;
+      padding: 40px;
+      color: #f44336;
+    }
+
+    .other-products {
+      margin-top: 40px;
+      padding-top: 30px;
+      border-top: 1px solid var(--outline);
+      overflow: hidden;
+    }
+
+    .other-products h2 {
+      font-size: 1.8rem;
+      margin-bottom: 20px;
+      color: var(--night);
+      padding: 0 15px;
+    }
+
+    .other-products-container {
+      overflow-x: auto;
+      padding: 10px 15px 30px;
+      margin: 0 -15px;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: thin;
+      scrollbar-color: var(--accent) #f0f0f0;
+    }
+
+    .other-products-container::-webkit-scrollbar {
+      height: 8px;
+    }
+
+    .other-products-container::-webkit-scrollbar-track {
+      background: #f0f0f0;
+      border-radius: 4px;
+    }
+
+    .other-products-container::-webkit-scrollbar-thumb {
+      background: var(--accent);
+      border-radius: 4px;
+    }
+
+    .other-products-grid {
+      display: flex;
+      gap: 20px;
+      padding: 5px 5px 10px;
+    }
+
+    .other-product-card {
+      flex: 0 0 200px;
+      background: var(--paper);
+      border-radius: 14px;
+      padding: 15px;
+      text-align: center;
+      border: 1px solid var(--outline);
+      box-shadow: var(--shadow-soft);
+      transition: transform 0.2s ease, box-shadow 0.3s ease;
+    }
+
+    .other-product-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .other-product-card img {
+      width: 100%;
+      height: 160px;
+      object-fit: contain;
+      border-radius: 10px;
+      margin-bottom: 6px;
+      background: #f8f9fb;
+      padding: 8px;
+    }
+
+    .products-scroll .product h3 {
+      font-size: 1rem;
+      margin: 8px 0;
+      color: var(--night);
+      line-height: 1.3;
+      height: 2.6em;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+      -webkit-box-orient: vertical;
+      -webkit-box-orient: vertical;
+    }
+
+    @media (max-width: 768px) {
+      .product-detail {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+
+      .product-detail-container {
+        margin: 10px;
+        padding: 20px;
+      }
+
+      .related-products-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        overflow-x: auto;
+        gap: 15px;
+        padding: 10px 0 20px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header id="site-header"></header>
+
+  <div class="product-detail-container">
+    <a href="products.html" class="back-btn">&larr; Back to Products</a>
+
+    <div id="loading" class="loading">Loading product...</div>
+    <div id="error" class="error hidden"></div>
+
+    <div id="product-detail" class="product-detail hidden">
+      <div class="product-image">
+        <img id="product-image" src="" alt="Product Image" />
+      </div>
+      <div class="product-info">
+        <h1 id="product-name">Product Name</h1>
+        <div class="product-category" id="product-category">Category</div>
+        <div class="product-price">
+          <div>
+            <span class="price-label">Regular price</span>
+            <span class="regular-price" id="regular-price"><span class="currency">&#2547;</span><span
+                class="amount">0</span></span>
+          </div>
+          <div>
+            <span class="price-label">Offer price</span>
+            <span class="discount-price" id="discount-price"><span class="currency">&#2547;</span><span
+                class="amount">0</span></span>
+          </div>
+        </div>
+        <div class="countdown-container">
+          <div class="countdown-title">Special Offer Ends In:</div>
+          <div id="countdown">02:00:00</div>
+        </div>
+        <button class="buy-now-btn" id="buy-now-btn">Buy Now</button>
+        <div class="product-description" id="product-description">Product description will appear here.</div>
+      </div>
+    </div>
+
+    <div class="section-title">Other Products</div>
+    <div class="scroll-container">
+      <section class="products-scroll" id="other-products">
+        <!-- Products will be loaded here -->
+      </section>
+    </div>
+  </div>
+
+  <div class="floating-messenger">
+    <a href="https://wa.me/+8801704336936" target="_blank" rel="noopener noreferrer" class="messenger-btn">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/240px-WhatsApp.svg.png"
+        alt="WhatsApp" />
+      Contact us
+    </a>
+  </div>
+
+  <footer id="site-footer"></footer>
+
+  <script src="assets/js/components.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="assets/js/firebase-config.js" defer></script>
+  <script src="assets/js/script.js" defer></script>
+  <script src="assets/js/products.js" defer></script>
+  <script src="assets/js/countdown-timer.js" defer></script>
+  <script src="assets/js/product-detail.js" defer></script>
+
+</body>
+
+</html>

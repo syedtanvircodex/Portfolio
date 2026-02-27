@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
+    <meta name="theme-color" content="#0f0f11">
+    <title>Tanvir.Quiz</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
+    
+
+    
+    <style>
+        :root {
+            --bg-base: #0f0f11;
+            --bg-surface: #18181b;
+            --bg-highlight: #27272a;
+            
+            --text-primary: #f4f4f5;
+            --text-secondary: #a1a1aa;
+            --text-tertiary: #52525b;
+
+            --accent: #d97706;
+            --accent-glow: rgba(217, 119, 6, 0.2);
+            --correct: #10b981;
+            --wrong: #ef4444;
+
+            --radius: 20px;
+            --max-w: 540px;
+            --font-body: 'Manrope', sans-serif;
+            --font-head: 'Playfair Display', serif;
+            
+            --ease-out: cubic-bezier(0.215, 0.61, 0.355, 1);
+            --ease-elastic: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; user-select: none; }
+        
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-primary);
+            font-family: var(--font-body);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .noise-layer {
+            position: fixed; inset: 0; pointer-events: none; z-index: 0; opacity: 0.04;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        .app-frame {
+            width: 100%;
+            height: 100%;
+            max-width: var(--max-w);
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-base);
+        }
+
+        @media (min-width: 600px) {
+            .app-frame {
+                height: 90vh;
+                max-height: 850px;
+                border-radius: var(--radius);
+                background: var(--bg-surface);
+                box-shadow: 0 40px 80px -20px rgba(0,0,0,0.5);
+                border: 1px solid rgba(255,255,255,0.05);
+                overflow: hidden;
+            }
+        }
+
+        .global-timer {
+            position: absolute; top: 0; left: 0; width: 100%; height: 4px;
+            background: rgba(255,255,255,0.05); z-index: 10;
+        }
+        .timer-fill {
+            height: 100%; width: 100%;
+            background: var(--accent);
+            transform-origin: left;
+            transform: scaleX(0);
+            transition: transform 0.1s linear, background 0.3s;
+        }
+
+        header {
+            padding: 24px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo { font-family: var(--font-head); font-style: italic; font-size: 1.5rem; letter-spacing: -0.02em; }
+        .stats-pill {
+            font-size: 0.8rem; font-weight: 600; color: var(--text-secondary);
+            background: rgba(255,255,255,0.03); padding: 6px 12px; border-radius: 100px;
+            transition: color 0.3s;
+        }
+
+        .view-stack { flex: 1; position: relative; overflow: hidden; }
+        
+        .view {
+            position: absolute; inset: 0;
+            padding: 0 32px 32px;
+            display: flex; flex-direction: column;
+            opacity: 0; pointer-events: none;
+            transform: translateY(20px);
+            transition: opacity 0.4s var(--ease-out), transform 0.4s var(--ease-out);
+            overflow-y: auto;
+            scrollbar-width: none; 
+        }
+        .view::-webkit-scrollbar { display: none; }
+        .view.active { opacity: 1; pointer-events: all; transform: translateY(0); z-index: 2; }
+
+        h1 { font-family: var(--font-head); font-size: 2.2rem; margin-bottom: 0.5rem; line-height: 1.1; }
+        p.sub { color: var(--text-secondary); line-height: 1.6; font-size: 1rem; margin-bottom: 2rem; }
+
+        .cat-grid { display: grid; grid-template-columns: 1fr; gap: 12px; padding-bottom: 40px; }
+        .cat-card {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.05);
+            padding: 24px; border-radius: 16px;
+            cursor: pointer; position: relative; overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            display: flex; align-items: center; gap: 16px;
+            touch-action: manipulation;
+        }
+        .cat-card:hover { background: rgba(255,255,255,0.05); transform: scale(1.02); border-color: rgba(255,255,255,0.1); }
+        .cat-card:active { transform: scale(0.98); }
+        
+        .cat-icon { 
+            width: 48px; height: 48px; background: rgba(255,255,255,0.05); 
+            border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; 
+        }
+        .cat-info h3 { font-size: 1.1rem; font-weight: 600; margin-bottom: 4px; }
+        .cat-info p { font-size: 0.85rem; color: var(--text-secondary); }
+
+        .q-meta { display: flex; gap: 12px; margin-bottom: 24px; font-size: 0.85rem; color: var(--text-tertiary); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+        .q-text { font-size: 1.5rem; font-weight: 500; line-height: 1.4; margin-bottom: 40px; min-height: 90px; }
+
+        .opt-list { display: flex; flex-direction: column; gap: 12px; }
+        .opt-btn {
+            width: 100%; text-align: left; padding: 20px 24px;
+            background: transparent; border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 14px; color: var(--text-primary);
+            font-family: var(--font-body); font-size: 1rem; font-weight: 500;
+            cursor: pointer; transition: all 0.2s; position: relative;
+            touch-action: manipulation;
+        }
+        @media (hover: hover) {
+            .opt-btn:hover { background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.3); }
+        }
+        .opt-btn:active { transform: scale(0.98); }
+        
+        .opt-btn.correct { background: rgba(16, 185, 129, 0.15); border-color: var(--correct); color: var(--correct); }
+        .opt-btn.wrong { background: rgba(239, 68, 68, 0.15); border-color: var(--wrong); color: var(--wrong); }
+        
+        .result-hero { text-align: center; padding: 40px 0; }
+        .score-big { font-family: var(--font-head); font-size: 5rem; line-height: 1; color: var(--accent); }
+        .score-label { font-size: 0.9rem; color: var(--text-secondary); letter-spacing: 2px; text-transform: uppercase; }
+
+        .review-box { 
+            background: rgba(0,0,0,0.2); border-radius: 16px; padding: 20px; 
+            margin-bottom: 24px; max-height: 300px; overflow-y: auto; 
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .review-item { 
+            padding-bottom: 12px; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); 
+            font-size: 0.9rem; line-height: 1.5;
+        }
+        .review-item:last-child { border-bottom: none; }
+
+        .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: auto; padding-bottom: 10px; }
+        .btn {
+            padding: 18px; border-radius: 12px; border: none; font-weight: 600; font-size: 1rem; font-family: var(--font-body);
+            cursor: pointer; transition: transform 0.2s; touch-action: manipulation;
+        }
+        .btn-primary { background: var(--text-primary); color: var(--bg-base); }
+        .btn-primary:active { transform: translateY(2px); }
+        .btn-outline { background: transparent; border: 1px solid rgba(255,255,255,0.1); color: var(--text-primary); }
+        
+        @keyframes slideIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        
+        @media (max-width: 600px) {
+            h1 { font-size: 1.8rem; }
+            .q-text { font-size: 1.35rem; margin-bottom: 30px; }
+            .opt-btn { padding: 18px; font-size: 1rem; }
+            header { padding: 20px; }
+            .view { padding: 0 20px 20px; }
+            .btn-row { padding-bottom: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="noise-layer"></div>
+    <canvas id="fx-canvas" style="position:fixed; inset:0; pointer-events:none; z-index:99;"></canvas>
+
+    <main class="app-frame">
+        <div class="global-timer"><div class="timer-fill" id="timer-bar"></div></div>
+
+        <header>
+            <div class="logo">Tanvir.<span style="color:var(--accent)">Quiz</span></div>
+            <div class="stats-pill" id="streak-badge">Streak: 0</div>
+        </header>
+
+        <div class="view-stack">
+            
+            <div id="v-home" class="view active">
+                <div style="margin-top: 20px;">
+                    <h1>Cognitive Benchmark</h1>
+                    <p class="sub">Select a logic module to begin calibration. Speed and accuracy determine your quotient.</p>
+                </div>
+                
+                <div class="cat-grid" id="cat-grid">
+                    </div>
+            </div>
+
+            <div id="v-quiz" class="view">
+                <div class="q-meta">
+                    <span id="q-progress">01 / 10</span>
+                    <span style="color:var(--accent)" id="q-category">General</span>
+                </div>
+
+                <div class="q-text" id="q-text">Loading...</div>
+
+                <div class="opt-list" id="opt-list">
+                    </div>
+            </div>
+
+            <div id="v-result" class="view">
+                <div class="result-hero">
+                    <div class="score-label">Efficiency Rating</div>
+                    <div class="score-big" id="final-score">0%</div>
+                    <p id="final-msg" style="color:var(--text-secondary); margin-top:16px;">Analysis Pending...</p>
+                </div>
+
+                <div class="review-box" id="review-box">
+                    </div>
+
+                <div class="btn-row">
+                    <button class="btn btn-outline" onclick="App.goHome()">Exit</button>
+                    <button class="btn btn-primary" onclick="App.restart()">Re-Calibrate</button>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        const DB = {
+            web: {
+                label: "Web Architecture",
+                desc: "DOM, Protocols, & Systems",
+                icon: "⚡",
+                qs: [
+                    { q: "Which HTTP method is idempotent?", a: 2, opts: ["POST", "CONNECT", "PUT", "PATCH"], exp: "PUT is idempotent; making the same request multiple times has the same effect as once." },
+                    { q: "What is the critical rendering path?", a: 0, opts: ["Steps to paint pixels", "Server database logic", "DNS resolution time", "JavaScript compiling"], exp: "It's the sequence of steps the browser takes to convert HTML, CSS, and JS into pixels on screen." },
+                    { q: "In CSS, what triggers a 'Reflow'?", a: 1, opts: ["Changing opacity", "Changing layout/geometry", "Changing color", "CSS Transform"], exp: "Reflow happens when layout or geometry changes, affecting the position of elements." },
+                    { q: "Which status code means 'Teapot'?", a: 3, opts: ["404", "500", "200", "418"], exp: "418 'I'm a teapot' is an April Fools' joke status defined in RFC 2324." },
+                    { q: "CORS is enforced by the...", a: 0, opts: ["Browser", "Server", "ISP", "Router"], exp: "Browsers enforce Same-Origin Policy and check CORS headers for cross-origin requests." }
+                ]
+            },
+            algo: {
+                label: "Algorithms & Data",
+                desc: "Logic, Trees, & Big O",
+                icon: "🧬",
+                qs: [
+                    { q: "Worst case time for QuickSort?", a: 2, opts: ["O(n log n)", "O(n)", "O(n²)", "O(1)"], exp: "O(n²) occurs when the pivot is the smallest or largest element repeatedly." },
+                    { q: "Which structure is LIFO?", a: 1, opts: ["Queue", "Stack", "Array", "Linked List"], exp: "A Stack is Last-In, First-Out (like a stack of plates)." },
+                    { q: "Binary Search requires data to be...", a: 0, opts: ["Sorted", "Hashed", "Indexed", "Linked"], exp: "Binary search only works on sorted arrays by dividing the search interval in half." },
+                    { q: "What prevents circular wait in Deadlocks?", a: 3, opts: ["Mutex", "Semaphores", "Caching", "Resource Ordering"], exp: "Imposing a linear ordering of resource types prevents circular wait conditions." },
+                    { q: "The 'Traveling Salesman' is...", a: 1, opts: ["P Problem", "NP-Hard", "Linear", "Polynomial"], exp: "It is an NP-Hard problem in combinatorial optimization." }
+                ]
+            },
+            general: {
+                label: "Polymath",
+                desc: "Science, History, & Art",
+                icon: "🏛️",
+                qs: [
+                    { q: "The Golden Ratio is approx...", a: 0, opts: ["1.618", "3.141", "1.414", "2.718"], exp: "Phi (φ) is approximately 1.618." },
+                    { q: "Entropy in an isolated system...", a: 1, opts: ["Decreases", "Increases", "Stays Zero", "Fluctuates"], exp: "Second Law of Thermodynamics: Entropy of an isolated system always increases." },
+                    { q: "Who wrote 'The Prince'?", a: 2, opts: ["Plato", "Dante", "Machiavelli", "Socrates"], exp: "Niccolò Machiavelli wrote it as a treatise on political power." },
+                    { q: "Speed of light in vacuum?", a: 1, opts: ["3x10^6 m/s", "3x10^8 m/s", "3x10^4 m/s", "Instant"], exp: "c is exactly 299,792,458 m/s, approx 3x10^8." },
+                    { q: "Primary colors of light?", a: 3, opts: ["RYB", "CMYK", "B&W", "RGB"], exp: "Red, Green, and Blue are the additive primary colors of light." }
+                ]
+            }
+        };
+
+        const App = {
+            state: {
+                currentCat: null,
+                queue: [],
+                idx: 0,
+                score: 0,
+                streak: 0,
+                history: [],
+                timer: 0,
+                maxTime: 12000,
+                active: false
+            },
+            
+            els: {
+                timerBar: document.getElementById('timer-bar'),
+                streak: document.getElementById('streak-badge'),
+                catGrid: document.getElementById('cat-grid'),
+                qText: document.getElementById('q-text'),
+                optList: document.getElementById('opt-list'),
+                progress: document.getElementById('q-progress'),
+                catLabel: document.getElementById('q-category'),
+                finalScore: document.getElementById('final-score'),
+                finalMsg: document.getElementById('final-msg'),
+                reviewBox: document.getElementById('review-box')
+            },
+
+            init() {
+                this.els.catGrid.innerHTML = Object.keys(DB).map(k => `
+                    <div class="cat-card" onclick="App.start('${k}')">
+                        <div class="cat-icon">${DB[k].icon}</div>
+                        <div class="cat-info">
+                            <h3>${DB[k].label}</h3>
+                            <p>${DB[k].desc}</p>
+                        </div>
+                    </div>
+                `).join('');
+                requestAnimationFrame(this.loop.bind(this));
+            },
+
+            switchView(id) {
+                document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
+                document.getElementById(id).classList.add('active');
+            },
+
+            start(cat) {
+                this.state.currentCat = cat;
+                this.state.queue = [...DB[cat].qs].sort(() => Math.random() - 0.5);
+                this.state.idx = 0;
+                this.state.score = 0;
+                this.state.streak = 0;
+                this.state.history = [];
+                this.updateStreak();
+                
+                this.switchView('v-quiz');
+                this.loadQuestion();
+            },
+
+            loadQuestion() {
+                if(this.state.idx >= this.state.queue.length) return this.endGame();
+
+                const q = this.state.queue[this.state.idx];
+                this.state.active = true;
+                this.state.timer = this.state.maxTime;
+                this.els.catLabel.innerText = DB[this.state.currentCat].label;
+                this.els.progress.innerText = `${(this.state.idx + 1).toString().padStart(2, '0')} / ${this.state.queue.length}`;
+                this.els.qText.style.opacity = 0;
+                this.els.qText.style.transform = "translateY(10px)";
+                setTimeout(() => {
+                    this.els.qText.innerText = q.q;
+                    this.els.qText.style.transition = "all 0.4s var(--ease-out)";
+                    this.els.qText.style.opacity = 1;
+                    this.els.qText.style.transform = "translateY(0)";
+                }, 100);
+                this.els.optList.innerHTML = q.opts.map((o, i) => `
+                    <button class="opt-btn" onclick="App.handleAnswer(${i}, this)" style="animation: slideIn 0.4s var(--ease-out) forwards ${i * 0.05}s; opacity:0">
+                        ${o}
+                    </button>
+                `).join('');
+            },
+
+            loop(timestamp) {
+                if (this.state.active) {
+                    const dt = 16.6;
+                    this.state.timer -= dt;
+
+                    const pct = Math.max(0, (this.state.timer / this.state.maxTime) * 100);
+                    this.els.timerBar.style.transform = `scaleX(${pct/100})`;
+                    if(pct < 30) this.els.timerBar.style.background = "var(--wrong)";
+                    else if(pct < 60) this.els.timerBar.style.background = "var(--accent)";
+                    else this.els.timerBar.style.background = "var(--correct)";
+
+                    if (this.state.timer <= 0) {
+                        this.timeOut();
+                    }
+                }
+                requestAnimationFrame(this.loop.bind(this));
+            },
+
+            handleAnswer(choiceIdx, btn) {
+                if (!this.state.active) return;
+                this.state.active = false;
+                const q = this.state.queue[this.state.idx];
+                const isCorrect = choiceIdx === q.a;
+                this.state.history.push({
+                    q: q.q,
+                    userAns: q.opts[choiceIdx],
+                    correctAns: q.opts[q.a],
+                    isCorrect: isCorrect,
+                    exp: q.exp
+                });
+                if (isCorrect) {
+                    btn.classList.add('correct');
+                    this.state.score++;
+                    this.state.streak++;
+                    this.triggerConfetti(btn.getBoundingClientRect());
+                } else {
+                    btn.classList.add('wrong');
+                    this.state.streak = 0;
+                    this.els.optList.children[q.a].classList.add('correct');
+                    document.body.style.transform = "translateX(-5px)";
+                    setTimeout(() => document.body.style.transform = "translateX(5px)", 50);
+                    setTimeout(() => document.body.style.transform = "none", 100);
+                }
+                
+                this.updateStreak();
+                setTimeout(() => {
+                    this.state.idx++;
+                    this.loadQuestion();
+                }, 1500);
+            },
+
+            timeOut() {
+                this.state.active = false;
+                this.state.streak = 0;
+                this.updateStreak();
+                const q = this.state.queue[this.state.idx];
+                this.state.history.push({
+                    q: q.q,
+                    userAns: "Time Out",
+                    correctAns: q.opts[q.a],
+                    isCorrect: false,
+                    exp: q.exp
+                });
+                this.els.optList.children[q.a].classList.add('correct');
+
+                setTimeout(() => {
+                    this.state.idx++;
+                    this.loadQuestion();
+                }, 1500);
+            },
+
+            updateStreak() {
+                this.els.streak.innerText = `Streak: ${this.state.streak}`;
+                this.els.streak.style.color = this.state.streak > 2 ? 'var(--accent)' : 'var(--text-secondary)';
+                if(this.state.streak > 2) this.els.streak.style.textShadow = "0 0 10px var(--accent-glow)";
+                else this.els.streak.style.textShadow = "none";
+            },
+
+            endGame() {
+                this.switchView('v-result');
+                const pct = Math.round((this.state.score / this.state.queue.length) * 100);
+                let count = 0;
+                const step = pct > 0 ? 1 : 0;
+                
+                if(pct > 0) {
+                   const interval = setInterval(() => {
+                        count += 2;
+                        if(count >= pct) {
+                            count = pct;
+                            clearInterval(interval);
+                        }
+                        this.els.finalScore.innerText = `${count}%`;
+                    }, 20);
+                } else {
+                    this.els.finalScore.innerText = "0%";
+                }
+                if(pct === 100) this.els.finalMsg.innerText = "Flawless Victory. World Class.";
+                else if(pct >= 80) this.els.finalMsg.innerText = "Exceptional cognitive performance.";
+                else if(pct >= 60) this.els.finalMsg.innerText = "Above average. Room for optimization.";
+                else this.els.finalMsg.innerText = "Recalibration recommended.";
+                this.els.reviewBox.innerHTML = this.state.history.map((h, i) => `
+                    <div class="review-item">
+                        <div style="font-weight:600; margin-bottom:4px; font-family:var(--font-head); letter-spacing:0.5px;">${i+1}. ${h.q}</div>
+                        <div style="color: ${h.isCorrect ? 'var(--correct)' : 'var(--wrong)'}; margin-bottom:4px; font-size:0.9em;">
+                            Your Answer: <strong>${h.userAns}</strong>
+                        </div>
+                        ${!h.isCorrect ? `<div style="color:var(--text-secondary); font-size:0.85em;">Correct: ${h.correctAns}</div>` : ''}
+                        <div style="margin-top:6px; color:var(--text-tertiary); font-size:0.85em; line-height:1.4;">
+                            <span style="color:var(--accent)">★</span> ${h.exp}
+                        </div>
+                    </div>
+                `).join('');
+            },
+
+            goHome() { this.switchView('v-home'); },
+            restart() { this.start(this.state.currentCat); },
+
+            triggerConfetti(rect) {
+                const canvas = document.getElementById('fx-canvas');
+                const ctx = canvas.getContext('2d');
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+                
+                const particles = [];
+                const colors = ['#d97706', '#f59e0b', '#ffffff'];
+                const x = rect ? rect.left + rect.width/2 : window.innerWidth/2;
+                const y = rect ? rect.top + rect.height/2 : window.innerHeight/2;
+
+                for(let i=0; i<30; i++) {
+                    particles.push({
+                        x: x, y: y,
+                        vx: (Math.random() - 0.5) * 12,
+                        vy: (Math.random() - 0.5) * 12,
+                        life: 1,
+                        color: colors[Math.floor(Math.random()*colors.length)]
+                    });
+                }
+
+                function tick() {
+                    ctx.clearRect(0,0,canvas.width,canvas.height);
+                    let alive = false;
+                    particles.forEach(p => {
+                        if(p.life > 0) {
+                            alive = true;
+                            p.x += p.vx;
+                            p.y += p.vy;
+                            p.vy += 0.3;
+                            p.vx *= 0.95;
+                            p.life -= 0.03;
+                            
+                            ctx.fillStyle = p.color;
+                            ctx.globalAlpha = Math.max(0, p.life);
+                            ctx.beginPath();
+                            ctx.arc(p.x, p.y, 4, 0, Math.PI*2);
+                            ctx.fill();
+                        }
+                    });
+                    if(alive) requestAnimationFrame(tick);
+                }
+                tick();
+            }
+        };
+        App.init();
+
+    </script>
+</body>
+</html>

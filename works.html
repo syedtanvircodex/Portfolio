@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
+  <meta name="description"
+    content="Portfolio of Syed Tanvir Islam, a Web Developer from Dhaka, Bangladesh specializing in Front-End Development.">
+  <meta name="keywords" content="Syed Tanvir Islam, Web Developer, Dhaka, Front-End, JavaScript, Portfolio">
+  <meta name="author" content="Syed Tanvir Islam">
+  <meta name="theme-color" content="#080808">
+  <meta property="og:title" content="Syed Tanvir Islam | Front-End Developer">
+  <meta property="og:description"
+    content="Front-End Developer crafting high-performance, visually stunning web experiences.">
+  <title>Syed Tanvir Islam</title>
+
+  <link rel="icon" type="image/png" href="assets/icon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Inter+Tight:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <!-- GSAP + ScrollTrigger -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+  <style>
+    /* ── Design Tokens ── */
+    :root {
+      --ink: #080808;
+      --paper: #f2ede6;
+      --cream: #faf8f4;
+      --silver: rgba(255, 255, 255, 0.55);
+      --dim: rgba(255, 255, 255, 0.38);
+      --border: rgba(255, 255, 255, 0.08);
+      --border-h: rgba(255, 255, 255, 0.2);
+      --accent: #e8e3db;
+
+      --fh: 'Inter Tight', system-ui, sans-serif;
+      --fb: 'Inter', system-ui, sans-serif;
+      --ease: cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    *,
+    *::before,
+    *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      scroll-behavior: smooth;
+      scrollbar-gutter: stable;
+    }
+
+    html::-webkit-scrollbar {
+      display: none;
+    }
+
+    body {
+      font-family: var(--fb);
+      background: var(--ink);
+      color: var(--cream);
+      overflow-x: hidden;
+      cursor: auto;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+      cursor: pointer;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    /* ── Grain ── */
+    #grain {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      pointer-events: none;
+      opacity: 0.035;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 300px 300px;
+      animation: grain 0.5s steps(2) infinite;
+    }
+
+    @keyframes grain {
+      0% { opacity: 0.035; }
+      50% { opacity: 0.04; }
+      100% { opacity: 0.035; }
+    }
+
+    /* ── Progress bar ── */
+    #progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 1px;
+      width: 0%;
+      background: rgba(255, 255, 255, 0.5);
+      z-index: 9996;
+      pointer-events: none;
+    }
+
+    /* ── TOP NAV (iPhone liquid-glass style) ── */
+    #topnav {
+      position: fixed;
+      top: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1000;
+      padding: 0 32px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 40px;
+      transition: background 0.5s, border-color 0.5s, box-shadow 0.5s;
+      border-radius: 50px;
+
+      background: rgba(255, 255, 255, 0.07);
+      backdrop-filter: blur(28px) saturate(180%) brightness(1.15);
+      -webkit-backdrop-filter: blur(28px) saturate(180%) brightness(1.15);
+
+      border: 1px solid rgba(255, 255, 255, 0.18);
+
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.35),
+        inset 0 -1px 0 rgba(255, 255, 255, 0.06),
+        0 8px 32px -4px rgba(0, 0, 0, 0.55),
+        0 2px 8px rgba(0, 0, 0, 0.3);
+
+      width: fit-content;
+    }
+
+    #topnav.scrolled {
+      background: rgba(255, 255, 255, 0.09);
+      backdrop-filter: blur(40px) saturate(200%) brightness(1.1);
+      -webkit-backdrop-filter: blur(40px) saturate(200%) brightness(1.1);
+      border-color: rgba(255, 255, 255, 0.22);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.4),
+        inset 0 -1px 0 rgba(255, 255, 255, 0.07),
+        0 12px 48px -6px rgba(0, 0, 0, 0.7),
+        0 2px 10px rgba(0, 0, 0, 0.4);
+    }
+
+    .nav-logo {
+      height: 40px;
+      width: auto;
+      object-fit: contain;
+      display: block;
+      opacity: 0.92;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      list-style: none;
+      height: 100%;
+    }
+
+    .nav-links li {
+      display: flex;
+      align-items: center;
+      height: 100%;
+    }
+
+    .nav-links a {
+      display: flex;
+      align-items: center;
+      height: 100%;
+      padding: 0 16px;
+      font-size: 0.95rem;
+      font-weight: 500;
+      letter-spacing: 0.3px;
+      color: rgba(255, 255, 255, 0.82);
+      transition: color 0.2s;
+      white-space: nowrap;
+    }
+
+    .nav-links a:hover {
+      color: #fff;
+    }
+
+    /* Mobile nav */
+    .m-toggle {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--cream);
+      font-size: 1.1rem;
+      padding: 8px;
+    }
+
+    .mobile-menu {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(8, 8, 8, 0.97);
+      z-index: 999;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 32px;
+    }
+
+    .mobile-menu.open {
+      display: flex;
+    }
+
+    .mobile-menu a {
+      font-family: var(--fh);
+      font-size: 2rem;
+      font-weight: 700;
+      font-style: italic;
+      color: var(--cream);
+      opacity: 0.5;
+      transition: opacity 0.25s;
+    }
+
+    .mobile-menu a:hover {
+      opacity: 1;
+    }
+
+    .mobile-close {
+      display: none;
+    }
+
+    /* ── MAIN CONTENT ── */
+    main {
+      position: relative;
+      z-index: 2;
+    }
+
+    /* ── STATEMENT SECTION ── */
+    .statement-label {
+      text-align: center;
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.85);
+      margin-bottom: 40px;
+    }
+
+    /* ── WORKS SECTION ── */
+    .works-hdr {
+      padding: 120px clamp(24px, 5vw, 80px) 64px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* works container */
+    .works-pin-outer {
+      position: relative;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .works-scene {
+      display: flex;
+      flex-direction: column;
+      gap: 120px;
+      padding: 0 clamp(24px, 5vw, 80px) 140px;
+    }
+
+    /* Each work panel — static, scroll-revealed */
+    .work-panel {
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-bottom: none;
+      position: relative;
+    }
+
+    .proj-inner {
+      max-width: 1160px;
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 72px;
+      align-items: center;
+    }
+
+    /* giant ghost number */
+    .proj-ghost {
+      position: absolute;
+      right: -0.02em;
+      bottom: -0.1em;
+      font-family: var(--fh);
+      font-size: clamp(28vw, 38vw, 48vw);
+      font-weight: 900;
+      font-style: italic;
+      letter-spacing: -0.06em;
+      line-height: 1;
+      color: rgba(255, 255, 255, 0.018);
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .work-meta {
+      position: relative;
+      z-index: 2;
+    }
+
+    .proj-num {
+      font-family: var(--fh);
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 2.5px;
+      color: var(--dim);
+      margin-bottom: 14px;
+    }
+
+    .proj-cat {
+      font-size: 0.63rem;
+      font-weight: 600;
+      letter-spacing: 3.5px;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.38);
+      margin-bottom: 16px;
+    }
+
+    .proj-title {
+      font-family: var(--fh);
+      font-size: clamp(2.8rem, 5vw, 5rem);
+      font-weight: 900;
+      letter-spacing: -0.04em;
+      line-height: 0.97;
+      color: var(--cream);
+      margin-bottom: 22px;
+    }
+
+    .proj-title em {
+      font-style: italic;
+      font-weight: 200;
+      color: rgba(255, 255, 255, 0.4);
+    }
+
+    .proj-desc {
+      font-size: 1rem;
+      line-height: 1.75;
+      color: var(--silver);
+      margin-bottom: 28px;
+      max-width: 400px;
+    }
+
+    .proj-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-bottom: 36px;
+    }
+
+    .proj-tag {
+      font-size: 0.63rem;
+      padding: 5px 12px;
+      border-radius: 100px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: rgba(255, 255, 255, 0.5);
+      letter-spacing: 0.3px;
+    }
+
+    .proj-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 13px 26px;
+      border: 1px solid rgba(255, 255, 255, 0.9);
+      border-radius: 100px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--ink);
+      background: var(--cream);
+      transition: all 0.35s var(--ease);
+    }
+
+    .proj-link:hover {
+      background: #fff;
+      border-color: #fff;
+      gap: 16px;
+      transform: translateY(-2px);
+      box-shadow: 0 16px 40px -10px rgba(255, 255, 255, 0.2);
+    }
+
+
+
+    .proj-visual {
+      position: relative;
+    }
+
+    .proj-img-wrap {
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      aspect-ratio: 16/10;
+      background: rgba(255, 255, 255, 0.02);
+      box-shadow: 0 40px 80px -20px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+      transition: box-shadow 0.5s;
+    }
+
+    .proj-img-wrap:hover {
+      box-shadow: 0 60px 120px -24px rgba(0, 0, 0, 0.9), inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 0 80px -30px rgba(255, 255, 255, 0.06);
+    }
+
+    .proj-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: grayscale(100%);
+      transition: transform 1.2s cubic-bezier(0.19, 1, 0.22, 1), filter 0.6s var(--ease);
+    }
+
+    .proj-img-wrap:hover .proj-img {
+      transform: scale(1.08);
+      filter: grayscale(0%);
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      padding: 60px 40px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+      text-align: center;
+    }
+
+    .ft-logo {
+      height: 56px;
+      width: auto;
+      object-fit: contain;
+      opacity: 0.6;
+    }
+
+    .ft-copy {
+      font-size: 0.75rem;
+      color: rgba(255, 255, 255, 0.18);
+    }
+
+    /* ── SCROLL REVEAL ── */
+    .rv {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity 1s var(--ease), transform 1s var(--ease);
+      will-change: opacity, transform;
+    }
+
+    .rv.in {
+      opacity: 1;
+      transform: none;
+    }
+
+    /* Reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      .nav-links {
+        display: none;
+      }
+
+      .m-toggle {
+        display: block;
+      }
+
+      .nav-cta {
+        display: none;
+      }
+
+      .hero-title {
+        letter-spacing: -0.03em;
+      }
+
+      .proj-inner {
+        grid-template-columns: 1fr;
+        gap: 32px;
+      }
+
+      .proj-visual {
+        order: -1;
+      }
+
+      .proj-title {
+        font-size: clamp(2.4rem, 8vw, 3.5rem);
+      }
+
+      .works-scene {
+        gap: 60px;
+      }
+
+      .work-panel {
+        padding: 0;
+      }
+
+      .statement-section {
+        padding: 100px 24px;
+      }
+
+      .about-grid {
+        grid-template-columns: 1fr;
+        gap: 40px;
+      }
+
+      .milestones {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .contact-section {
+        padding: 80px 24px 100px;
+      }
+
+      .contact-links {
+        grid-template-columns: 1fr;
+        max-width: 320px;
+        margin: 0 auto;
+      }
+
+      footer {
+        padding: 32px 24px;
+      }
+
+      .works-header {
+        padding: 80px 24px 40px;
+      }
+
+      .about-section {
+        padding: 80px 24px;
+      }
+
+      .stack-section {
+        padding: 60px 24px 80px;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .hero {
+        padding: 80px 24px 60px;
+      }
+
+      .cta-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .btn-pill {
+        justify-content: center;
+      }
+
+      .milestones {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="grain"></div>
+  <div id="progress"></div>
+
+  <!-- Top Nav -->
+  <header id="topnav" role="banner">
+    <a href="index.html" aria-label="Home">
+      <img src="assets/icon.png" alt="Syed Tanvir Islam" class="nav-logo">
+    </a>
+    <ul class="nav-links" role="list">
+      <li><a href="#">Works</a></li>
+      <li><a href="index.html#about">About</a></li>
+      <li><a href="index.html#stack">Stack</a></li>
+      <li><a href="index.html#contact">Contact</a></li>
+    </ul>
+    <button class="m-toggle" id="m-toggle" aria-label="Open menu" aria-expanded="false">
+      <i class="fas fa-bars"></i>
+    </button>
+  </header>
+
+  <!-- Mobile Menu Overlay -->
+  <div class="mobile-menu" id="mobile-menu" role="dialog" aria-label="Navigation">
+    <a href="index.html" class="mobile-link">Home</a>
+    <a href="#" class="mobile-link">Works</a>
+    <a href="index.html#about" class="mobile-link">About</a>
+    <a href="index.html#stack" class="mobile-link">Stack</a>
+    <a href="index.html#contact" class="mobile-link">Contact</a>
+  </div>
+
+  <main id="main-content">
+
+    <div class="works-hdr rv">
+      <div class="statement-label">Works</div>
+    </div>
+
+    <!-- sticky pin container — height set by JS -->
+    <div class="works-pin-outer" id="works-pin-outer">
+
+      <!-- sticky scene — panels swap inside here -->
+      <div class="works-scene" id="works-scene">
+
+        <article class="work-panel" id="panel-0">
+          <div class="proj-ghost" aria-hidden="true">01</div>
+          <div class="proj-inner">
+            <div class="work-meta">
+              <div class="proj-num">01 / 12</div>
+              <div class="proj-cat">E-Commerce</div>
+              <h2 class="proj-title"><em>Mr.</em>Premium</h2>
+              <p class="proj-desc">A high-conversion digital goods storefront engineered for clarity and speed. Clean shopping experience, zero friction — built from the ground up.</p>
+              <div class="proj-tags">
+                <span class="proj-tag">HTML5</span>
+                <span class="proj-tag">CSS3</span>
+                <span class="proj-tag">JavaScript</span>
+              </div>
+              <a href="projects/MrPremiumApp/" class="proj-link" target="_blank" rel="noopener noreferrer">Live Demo</a>
+            </div>
+            <div class="proj-visual">
+              <div class="proj-img-wrap">
+                <img src="assets/mrpremium.png" alt="Mr.Premium App — E-commerce digital goods store" class="proj-img" loading="lazy">
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="work-panel" id="panel-1">
+          <div class="proj-ghost" aria-hidden="true">02</div>
+          <div class="proj-inner">
+            <div class="work-meta">
+              <div class="proj-num">02 / 12</div>
+              <div class="proj-cat">Debate &amp; Discussion</div>
+              <h2 class="proj-title">Debate<em>AI</em></h2>
+              <p class="proj-desc">An AI-powered debate arena with structured rounds, real-time feedback, and argument scoring. The future of critical thinking, online.</p>
+              <div class="proj-tags">
+                <span class="proj-tag">AI Integration</span>
+                <span class="proj-tag">Discussion Engine</span>
+              </div>
+              <a href="projects/Debate-AI/debate-arena.html" class="proj-link" target="_blank" rel="noopener noreferrer">Join Debate</a>
+            </div>
+            <div class="proj-visual">
+              <div class="proj-img-wrap">
+                <img src="assets/debateai.png" alt="Debate AI — AI-powered debate arena" class="proj-img" loading="lazy">
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="work-panel" id="panel-2">
+          <div class="proj-ghost" aria-hidden="true">03</div>
+          <div class="proj-inner">
+            <div class="work-meta">
+              <div class="proj-num">03 / 12</div>
+              <div class="proj-cat">Publishing</div>
+              <h2 class="proj-title">Unfiltered</h2>
+              <p class="proj-desc">Anonymous publishing platform with typography-first design and structured threads.</p>
+              <div class="proj-tags">
+                <span class="proj-tag">Anonymous</span>
+                <span class="proj-tag">Publishing</span>
+                <span class="proj-tag">Typography</span>
+              </div>
+              <a href="projects/Unfiltered/" class="proj-link" target="_blank" rel="noopener noreferrer">Visit Site</a>
+            </div>
+            <div class="proj-visual">
+              <div class="proj-img-wrap">
+                <img src="assets/unfiltered.png" alt="Unfiltered — Anonymous publishing platform" class="proj-img" loading="lazy">
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="work-panel" id="panel-3">
+          <div class="proj-ghost" aria-hidden="true">04</div>
+          <div class="proj-inner">
+            <div class="work-meta">
+              <div class="proj-num">04 / 12</div>
+              <div class="proj-cat">Artificial Intelligence</div>
+              <h2 class="proj-title">Tanvir<em>AI</em></h2>
+              <p class="proj-desc">A real-time conversational AI interface with markdown rendering, async message processing, and a polished chat UX. Built to feel native — not like a demo.</p>
+              <div class="proj-tags">
+                <span class="proj-tag">API Integration</span>
+                <span class="proj-tag">Async JavaScript</span>
+                <span class="proj-tag">Markdown Engine</span>
+              </div>
+              <a href="projects/tanvirai.html" class="proj-link" target="_blank" rel="noopener noreferrer">Start Chat</a>
+            </div>
+            <div class="proj-visual">
+              <div class="proj-img-wrap">
+                <img src="assets/tanvirai.png" alt="TanvirAI — AI conversational interface" class="proj-img" loading="lazy">
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="work-panel" id="panel-4">
+          <div class="proj-ghost" aria-hidden="true">05</div>
+          <div class="proj-inner">
+            <div class="work-meta">
+              <div class="proj-num">05 / 12</div>
+              <div class="proj-cat">Social &amp; Fun</div>
+              <h2 class="proj-title">Soul<em>Sync</em></h2>
+              <p class="proj-desc">Interactive love compatibility calculator with polished UI and instant results.</p>
+              <div class="proj-tags">
+                <span class="proj-tag">Interactive</span>
+                <span class="proj-tag">DOM Logic</span>
+                <span class="proj-tag">Shareable</span>
+              </div>
+              <a href="projects/SoulSync/" class="proj-link" target="_blank" rel="noopener noreferrer">Try It</a>
+            </div>
+            <div class="proj-visual">
+              <div class="proj-img-wrap">
+                <img src="assets/soulsync.png" alt="SoulSync — Interactive love compatibility calculator" class="proj-img" loading="lazy">
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="work-panel" id="panel-5">
+          <div class="proj-ghost" aria-hidden="true">06</div>
+          <div class="proj-inner">
+            <div class="work-meta">
+              <div class="proj-num">06 / 12</div>
+              <div class="proj-cat">Logic Engine</div>
+              <h2 class="proj-title">Interactive <em>Quiz</em></h2>
+              <p class="proj-desc">Quiz platform with local storage, countdown timers, and real-time scoring.</p>
+              <div class="proj-tags">
+                <span class="proj-tag">ES6+</span>
+                <span class="proj-tag">DOM Manipulation</span>
+                <span class="proj-tag">Local Storage</span>
+              </div>
+              <a href="projects/quiz.html" class="proj-link" target="_blank" rel="noopener noreferrer">Play Now</a>
+            </div>
+            <div class="proj-visual">
+              <div class="proj-img-wrap">
+                <img src="assets/quiz.png" alt="Interactive Quiz — Quiz platform with countdown timers" class="proj-img" loading="lazy">
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="work-panel" id="panel-6">
+          <div class="proj-ghost" aria-hidden="true">07</div>
+          <div class="proj-inner">
+            <div class="work-meta">
+              <div class="proj-num">07 / 12</div>
+              <div class="proj-cat">3D &amp; Visualization</div>
+              <h2 class="proj-title">3D <em>Map</em></h2>
+              <p class="proj-desc">Advanced real-time 3D map with interactive controls and vehicle visualization.</p>
+              <div class="proj-tags">
+                <span class="proj-tag">Three.js</span>
+                <span class="proj-tag">MapLibre GL</span>
+                <span class="proj-tag">3D Graphics</span>
+              </div>
+              <a href="projects/3d-map.html" class="proj-link" target="_blank" rel="noopener noreferrer">Explore</a>
+            </div>
+            <div class="proj-visual">
+              <div class="proj-img-wrap">
+                <img src="assets/3dmap.png" alt="3D Map — Advanced real-time 3D map" class="proj-img" loading="lazy">
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="work-panel" id="panel-7">
+          <div class="proj-ghost" aria-hidden="true">08</div>
+          <div class="proj-inner">
+            <div class="work-meta">
+              <div class="proj-num">08 / 12</div>
+              <div class="proj-cat">Utilities</div>
+              <h2 class="proj-title"><em>Simple</em> Calculator</h2>
+              <p class="proj-desc">A basic calculator app to perform simple arithmetic operations with clean interface.</p>
+              <div class="proj-tags">
+                <span class="proj-tag">JavaScript</span>
+                <span class="proj-tag">DOM</span>
+                <span class="proj-tag">Utility</span>
+              </div>
+              <a href="projects/calculator.html" class="proj-link" target="_blank" rel="noopener noreferrer">Use It</a>
+            </div>
+            <div class="proj-visual">
+              <div class="proj-img-wrap">
+                <img src="assets/calculator.png" alt="Simple Calculator — Basic calculator app" class="proj-img" loading="lazy">
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="work-panel" id="panel-8">
+          <div class="proj-ghost" aria-hidden="true">09</div>
+          <div class="proj-inner">
+            <div class="work-meta">
+              <div class="proj-num">09 / 12</div>
+              <div class="proj-cat">Productivity</div>
+              <h2 class="proj-title">To-Do <em>List</em></h2>
+              <p class="proj-desc">Clean and functional to-do list application for task management with local persistence.</p>
+              <div class="proj-tags">
+                <span class="proj-tag">Local Storage</span>
+                <span class="proj-tag">JavaScript</span>
+                <span class="proj-tag">Productivity</span>
+              </div>
+              <a href="projects/todo.html" class="proj-link" target="_blank" rel="noopener noreferrer">Manage Tasks</a>
+            </div>
+            <div class="proj-visual">
+              <div class="proj-img-wrap">
+                <img src="assets/to-do-list.png" alt="To-Do List — Clean task management application" class="proj-img" loading="lazy">
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="work-panel" id="panel-9">
+          <div class="proj-ghost" aria-hidden="true">10</div>
+          <div class="proj-inner">
+            <div class="work-meta">
+              <div class="proj-num">10 / 12</div>
+              <div class="proj-cat">Weather & API</div>
+              <h2 class="proj-title">Real-Time <em>Weather</em></h2>
+              <p class="proj-desc">Live weather application with location-based forecasts using real-time API data.</p>
+              <div class="proj-tags">
+                <span class="proj-tag">API</span>
+                <span class="proj-tag">Geolocation</span>
+                <span class="proj-tag">Real-Time</span>
+              </div>
+              <a href="projects/weather.html" class="proj-link" target="_blank" rel="noopener noreferrer">Check Weather</a>
+            </div>
+            <div class="proj-visual">
+              <div class="proj-img-wrap">
+                <img src="assets/weather.png" alt="Real-Time Weather — Live weather application" class="proj-img" loading="lazy">
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="work-panel" id="panel-10">
+          <div class="proj-ghost" aria-hidden="true">11</div>
+          <div class="proj-inner">
+            <div class="work-meta">
+              <div class="proj-num">11 / 12</div>
+              <div class="proj-cat">API Integration</div>
+              <h2 class="proj-title">Movie <em>Search</em></h2>
+              <p class="proj-desc">Stylish movie lookup tool using the OMDb API for comprehensive data and ratings.</p>
+              <div class="proj-tags">
+                <span class="proj-tag">API</span>
+                <span class="proj-tag">Fetch</span>
+                <span class="proj-tag">Search</span>
+              </div>
+              <a href="projects/movie-search.html" class="proj-link" target="_blank" rel="noopener noreferrer">Search Movies</a>
+            </div>
+            <div class="proj-visual">
+              <div class="proj-img-wrap">
+                <img src="assets/moviesearch.png" alt="Movie Search — Stylish movie lookup tool" class="proj-img" loading="lazy">
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="work-panel" id="panel-11">
+          <div class="proj-ghost" aria-hidden="true">12</div>
+          <div class="proj-inner">
+            <div class="work-meta">
+              <div class="proj-num">12 / 12</div>
+              <div class="proj-cat">Productivity</div>
+              <h2 class="proj-title"><em>Notes</em> App</h2>
+              <p class="proj-desc">Simple notes-taking application with local storage for personal notes and quick saves.</p>
+              <div class="proj-tags">
+                <span class="proj-tag">Local Storage</span>
+                <span class="proj-tag">CRUD</span>
+                <span class="proj-tag">Productivity</span>
+              </div>
+              <a href="projects/notes-app.html" class="proj-link" target="_blank" rel="noopener noreferrer">Take Notes</a>
+            </div>
+            <div class="proj-visual">
+              <div class="proj-img-wrap">
+                <img src="assets/notes.png" alt="Notes App — Simple notes-taking application" class="proj-img" loading="lazy">
+              </div>
+            </div>
+          </div>
+        </article>
+
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <a href="index.html" aria-label="Home">
+      <img src="assets/icon.png" alt="Logo" class="ft-logo img">
+    </a>
+    <p class="ft-copy">&copy; 2026 Syed Tanvir Islam. All rights reserved.</p>
+  </footer>
+
+  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
+  <script>
+    /* ── Scroll Progress Bar ─── */
+    const progressBar = document.getElementById('progress');
+    function updateProgress() {
+      const scrollTop = window.scrollY || document.documentElement.scrollTop;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const pct = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+      progressBar.style.width = pct.toFixed(2) + '%';
+    }
+    window.addEventListener('scroll', updateProgress, { passive: true });
+
+
+    /* ── Mobile Menu Toggle ─── */
+    const mToggle = document.getElementById('m-toggle');
+    const mobileMenu = document.getElementById('mobile-menu');
+    let menuOpen = false;
+
+    mToggle?.addEventListener('click', () => {
+      menuOpen = !menuOpen;
+      mToggle.setAttribute('aria-expanded', menuOpen);
+      mobileMenu.classList.toggle('open', menuOpen);
+    });
+
+    // Close menu on link click
+    mobileMenu?.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        menuOpen = false;
+        mToggle.setAttribute('aria-expanded', false);
+        mobileMenu.classList.remove('open');
+      });
+    });
+
+    /* ── Work scroll reveal ── */
+    const panels = document.querySelectorAll('.work-panel');
+    panels.forEach((panel) => {
+      gsap.fromTo(panel,
+        { opacity: 0, y: 40 },
+        {
+          opacity: 1, y: 0, duration: 1, ease: 'power3.out',
+          scrollTrigger: {
+            trigger: panel,
+            start: 'top 85%',
+          }
+        }
+      );
+    });
+
+    /* ── Scroll reveal ─── */
+    const io = new IntersectionObserver((entries, obs) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('in');
+          obs.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+    document.querySelectorAll('.rv').forEach(el => io.observe(el));
+  </script>
+</body>
+</html>

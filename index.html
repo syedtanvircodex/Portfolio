@@ -1,0 +1,2460 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
+  <meta name="description"
+    content="Portfolio of Syed Tanvir Islam, a Web Developer from Dhaka, Bangladesh specializing in Front-End Development.">
+  <meta name="keywords" content="Syed Tanvir Islam, Web Developer, Dhaka, Front-End, JavaScript, Portfolio">
+  <meta name="author" content="Syed Tanvir Islam">
+  <meta name="theme-color" content="#080808">
+  <meta property="og:title" content="Syed Tanvir Islam | Front-End Developer">
+  <meta property="og:description"
+    content="Front-End Developer crafting high-performance, visually stunning web experiences.">
+  <title>Syed Tanvir Islam</title>
+
+  <link rel="icon" type="image/png" href="assets/icon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Inter+Tight:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <!-- GSAP + ScrollTrigger -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+  <style>
+    /* ── Design Tokens ── */
+    :root {
+      --ink: #080808;
+      --paper: #f2ede6;
+      --cream: #faf8f4;
+      --silver: rgba(255, 255, 255, 0.55);
+      --dim: rgba(255, 255, 255, 0.38);
+      --border: rgba(255, 255, 255, 0.08);
+      --border-h: rgba(255, 255, 255, 0.2);
+      --accent: #e8e3db;
+
+      --fh: 'Inter Tight', system-ui, sans-serif;
+      --fb: 'Inter', system-ui, sans-serif;
+      --ease: cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    *,
+    *::before,
+    *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      scroll-behavior: smooth;
+      scrollbar-gutter: stable;
+    }
+
+    html::-webkit-scrollbar {
+      display: none;
+    }
+
+    body {
+      font-family: var(--fb);
+      background: var(--ink);
+      color: var(--cream);
+      overflow-x: hidden;
+      cursor: auto;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+      cursor: pointer;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    /* ── Grain ── */
+    #grain {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      pointer-events: none;
+      opacity: 0.035;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 300px 300px;
+      animation: grain 0.5s steps(2) infinite;
+    }
+
+    /* Respect user's motion preferences */
+    @media (prefers-reduced-motion: reduce) {
+
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+
+      /* Ensure hero content is visible */
+      .hero-eyebrow,
+      .hero-title,
+      .hero-sub,
+      .cta-row,
+      .hero-bg-text {
+        opacity: 1 !important;
+        transform: none !important;
+      }
+
+      /* Disable infinite animations */
+      .orb-a,
+      .orb-b,
+      .avail-dot,
+      .scroll-line {
+        animation: none !important;
+      }
+    }
+
+    @keyframes grain {
+      0% {
+        opacity: 0.035;
+      }
+
+      50% {
+        opacity: 0.04;
+      }
+
+      100% {
+        opacity: 0.035;
+      }
+    }
+
+    /* ── Progress bar ── */
+    #progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 1px;
+      width: 0%;
+      background: rgba(255, 255, 255, 0.5);
+      z-index: 9996;
+      pointer-events: none;
+    }
+
+    /* ── TOP NAV (iPhone liquid-glass style) ── */
+    #topnav {
+      position: fixed;
+      top: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1000;
+      padding: 0 32px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 40px;
+      transition: background 0.5s, border-color 0.5s, box-shadow 0.5s;
+      border-radius: 50px;
+
+      /* Layered glass: transparent tint + frosted blur */
+      background: rgba(255, 255, 255, 0.07);
+      backdrop-filter: blur(28px) saturate(180%) brightness(1.15);
+      -webkit-backdrop-filter: blur(28px) saturate(180%) brightness(1.15);
+
+      /* Outer border: thin light edge */
+      border: 1px solid rgba(255, 255, 255, 0.18);
+
+      /* Gloss: bright top-edge reflection, soft bottom shadow */
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.35),
+        /* top shine */
+        inset 0 -1px 0 rgba(255, 255, 255, 0.06),
+        /* bottom sub-reflection */
+        0 8px 32px -4px rgba(0, 0, 0, 0.55),
+        /* drop shadow */
+        0 2px 8px rgba(0, 0, 0, 0.3);
+
+      width: fit-content;
+    }
+
+    #topnav.scrolled {
+      background: rgba(255, 255, 255, 0.09);
+      backdrop-filter: blur(40px) saturate(200%) brightness(1.1);
+      -webkit-backdrop-filter: blur(40px) saturate(200%) brightness(1.1);
+      border-color: rgba(255, 255, 255, 0.22);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.4),
+        inset 0 -1px 0 rgba(255, 255, 255, 0.07),
+        0 12px 48px -6px rgba(0, 0, 0, 0.7),
+        0 2px 10px rgba(0, 0, 0, 0.4);
+    }
+
+    .nav-logo {
+      height: 40px;
+      width: auto;
+      object-fit: contain;
+      display: block;
+      opacity: 0.92;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      list-style: none;
+      height: 100%;
+    }
+
+    .nav-links li {
+      display: flex;
+      align-items: center;
+      height: 100%;
+    }
+
+    .nav-links a {
+      display: flex;
+      align-items: center;
+      height: 100%;
+      padding: 0 16px;
+      font-size: 0.95rem;
+      font-weight: 500;
+      letter-spacing: 0.3px;
+      color: rgba(255, 255, 255, 0.82);
+      transition: color 0.2s;
+      white-space: nowrap;
+    }
+
+    .nav-links a:hover {
+      color: #fff;
+    }
+
+    .nav-cta {
+      display: flex;
+      align-items: center;
+      font-size: 0.9rem;
+      font-weight: 500;
+      padding: 9px 22px;
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      border-radius: 100px;
+      color: var(--cream);
+      background: rgba(255, 255, 255, 0.06);
+      transition: background 0.3s, border-color 0.3s;
+      white-space: nowrap;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    }
+
+    .nav-cta:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.35);
+    }
+
+    /* Mobile nav */
+    .m-toggle {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--cream);
+      font-size: 1.1rem;
+      padding: 8px;
+    }
+
+    .mobile-menu {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(8, 8, 8, 0.97);
+      z-index: 999;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 32px;
+    }
+
+    .mobile-menu.open {
+      display: flex;
+    }
+
+    .mobile-menu a {
+      font-family: var(--fh);
+      font-size: 2rem;
+      font-weight: 700;
+      font-style: italic;
+      color: var(--cream);
+      opacity: 0.5;
+      transition: opacity 0.25s;
+    }
+
+    .mobile-menu a:hover {
+      opacity: 1;
+    }
+
+    .mobile-close {
+      display: none;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      padding: 140px 40px 60px;
+    }
+
+    .hero-bg-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: var(--fh);
+      font-weight: 900;
+      font-size: clamp(18vw, 24vw, 28vw);
+      letter-spacing: -0.05em;
+      color: rgba(255, 255, 255, 0.025);
+      white-space: nowrap;
+      pointer-events: none;
+      user-select: none;
+      line-height: 1;
+    }
+
+    .hero-orb {
+      position: absolute;
+      border-radius: 50%;
+      pointer-events: none;
+      filter: blur(120px);
+    }
+
+    .orb-a {
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.035) 0%, transparent 70%);
+      top: -180px;
+      left: -200px;
+      animation: drift1 28s ease-in-out infinite;
+    }
+
+    .orb-b {
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.025) 0%, transparent 70%);
+      bottom: -160px;
+      right: -140px;
+      animation: drift2 34s ease-in-out infinite;
+    }
+
+    @keyframes drift1 {
+
+      0%,
+      100% {
+        transform: translate(0, 0) scale(1);
+      }
+
+      40% {
+        transform: translate(60px, 50px) scale(1.06);
+      }
+
+      70% {
+        transform: translate(-30px, 70px) scale(0.96);
+      }
+    }
+
+    @keyframes drift2 {
+
+      0%,
+      100% {
+        transform: translate(0, 0) scale(1);
+      }
+
+      35% {
+        transform: translate(-55px, -60px) scale(1.05);
+      }
+
+      65% {
+        transform: translate(50px, -30px) scale(0.97);
+      }
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      max-width: 900px;
+    }
+
+    .avail-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(16, 185, 129, 0.08);
+      border: 1px solid rgba(16, 185, 129, 0.22);
+      border-radius: 100px;
+      padding: 5px 14px 5px 10px;
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.9px;
+      text-transform: uppercase;
+      color: #34d399;
+      margin-bottom: 28px;
+    }
+
+    .avail-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #34d399;
+      flex-shrink: 0;
+      animation: ping 2s ease infinite;
+    }
+
+    @keyframes ping {
+      0% {
+        box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.45);
+      }
+
+      70% {
+        box-shadow: 0 0 0 7px rgba(52, 211, 153, 0);
+      }
+
+      100% {
+        box-shadow: 0 0 0 0 rgba(52, 211, 153, 0);
+      }
+    }
+
+    .hero-eyebrow {
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.85);
+      /* Changed from var(--silver) for better visibility */
+      margin-bottom: 20px;
+    }
+
+    .hero-title {
+      font-family: var(--fh);
+      font-size: clamp(2.8rem, 7vw, 6.5rem);
+      font-weight: 900;
+      letter-spacing: -0.04em;
+      line-height: 1.0;
+      color: var(--cream);
+      margin-bottom: 28px;
+    }
+
+    .hero-title em {
+      font-style: italic;
+      font-weight: 200;
+      color: rgba(255, 255, 255, 0.45);
+    }
+
+    .hero-sub {
+      font-size: clamp(0.95rem, 1.6vw, 1.15rem);
+      color: var(--silver);
+      line-height: 1.75;
+      max-width: 560px;
+      margin: 0 auto 40px;
+    }
+
+    .hero-sub strong {
+      color: var(--cream);
+      font-weight: 500;
+    }
+
+    .cta-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 13px 28px;
+      border-radius: 100px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: all 0.35s var(--ease);
+    }
+
+    .btn-primary {
+      background: var(--cream);
+      color: var(--ink);
+    }
+
+    .btn-primary:hover {
+      background: #fff;
+      transform: translateY(-2px);
+      box-shadow: 0 16px 40px -10px rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-ghost {
+      border: 1px solid var(--border-h);
+      color: var(--cream);
+    }
+
+    .btn-ghost:hover {
+      border-color: rgba(255, 255, 255, 0.35);
+      background: rgba(255, 255, 255, 0.05);
+      transform: translateY(-2px);
+    }
+
+    /* Scroll cue */
+    .scroll-cue {
+      position: absolute;
+      bottom: 36px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      opacity: 0.35;
+      animation: cue-fade 2.5s 2.5s ease both;
+    }
+
+    @keyframes cue-fade {
+      from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(8px);
+      }
+
+      to {
+        opacity: 0.35;
+        transform: translateX(-50%) translateY(0);
+      }
+    }
+
+    .scroll-cue span {
+      font-size: 0.6rem;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--silver);
+    }
+
+    .scroll-line {
+      width: 1px;
+      height: 0;
+      background: linear-gradient(to bottom, rgba(255, 255, 255, 0.5), transparent);
+      animation: line-grow 1s 3s var(--ease) both, line-pulse 2.2s 4.5s ease-in-out infinite;
+    }
+
+    @keyframes line-grow {
+      to {
+        height: 44px;
+      }
+    }
+
+    @keyframes line-pulse {
+
+      0%,
+      100% {
+        opacity: 0.2;
+      }
+
+      50% {
+        opacity: 0.7;
+      }
+    }
+
+    /* ── STATEMENT SECTION ── */
+    .statement-section {
+      padding: 160px 40px;
+      max-width: 1060px;
+      margin: 0 auto;
+    }
+
+    .statement-label {
+      text-align: center;
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.85);
+      /* Changed for better visibility */
+      margin-bottom: 40px;
+    }
+
+    .statement-text {
+      text-align: center;
+      font-family: var(--fh);
+      font-size: clamp(1.8rem, 3.8vw, 3.5rem);
+      font-weight: 700;
+      font-style: italic;
+      line-height: 1.25;
+      color: var(--cream);
+    }
+
+    /* Word-split animation via GSAP scrub */
+    .word {
+      display: inline-block;
+      will-change: opacity, transform;
+    }
+
+    .bio-word {
+      display: inline-block;
+      will-change: opacity, transform;
+    }
+
+    .word-dim {
+      color: rgba(255, 255, 255, 0.15);
+    }
+
+    /* ── WORKS SECTION ── */
+    .works-hdr {
+      padding: 120px clamp(24px, 5vw, 80px) 64px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* works container */
+    .works-pin-outer {
+      position: relative;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .works-scene {
+      display: flex;
+      flex-direction: column;
+      gap: 120px;
+      padding: 0 clamp(24px, 5vw, 80px);
+    }
+
+    /* Each work panel — static, scroll-revealed */
+    .work-panel {
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-bottom: none;
+      position: relative;
+    }
+
+    .proj-inner {
+      max-width: 1160px;
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 72px;
+      align-items: center;
+    }
+
+    /* giant ghost number */
+    .proj-ghost {
+      position: absolute;
+      right: -0.02em;
+      bottom: -0.1em;
+      font-family: var(--fh);
+      font-size: clamp(28vw, 38vw, 48vw);
+      font-weight: 900;
+      font-style: italic;
+      letter-spacing: -0.06em;
+      line-height: 1;
+      color: rgba(255, 255, 255, 0.018);
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .proj-num {
+      font-family: var(--fh);
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 2.5px;
+      color: var(--dim);
+      margin-bottom: 14px;
+    }
+
+    .proj-cat {
+      font-size: 0.63rem;
+      font-weight: 600;
+      letter-spacing: 3.5px;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.38);
+      margin-bottom: 16px;
+    }
+
+    .proj-title {
+      font-family: var(--fh);
+      font-size: clamp(2.8rem, 5vw, 5rem);
+      font-weight: 900;
+      letter-spacing: -0.04em;
+      line-height: 0.97;
+      color: var(--cream);
+      margin-bottom: 22px;
+    }
+
+    .proj-title em {
+      font-style: italic;
+      font-weight: 200;
+      color: rgba(255, 255, 255, 0.4);
+    }
+
+    .proj-desc {
+      font-size: 1rem;
+      line-height: 1.75;
+      color: var(--silver);
+      margin-bottom: 28px;
+      max-width: 400px;
+    }
+
+    .proj-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-bottom: 36px;
+    }
+
+    .proj-tag {
+      font-size: 0.63rem;
+      padding: 5px 12px;
+      border-radius: 100px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: rgba(255, 255, 255, 0.5);
+      letter-spacing: 0.3px;
+    }
+
+    .proj-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 13px 26px;
+      border: 1px solid rgba(255, 255, 255, 0.9);
+      border-radius: 100px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--ink);
+      background: var(--cream);
+      transition: all 0.35s var(--ease);
+    }
+
+    .proj-link:hover {
+      background: #fff;
+      border-color: #fff;
+      gap: 16px;
+      transform: translateY(-2px);
+      box-shadow: 0 16px 40px -10px rgba(255, 255, 255, 0.2);
+    }
+
+
+
+    .proj-visual {
+      position: relative;
+    }
+
+    .proj-img-wrap {
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      aspect-ratio: 16/10;
+      background: rgba(255, 255, 255, 0.02);
+      box-shadow: 0 40px 80px -20px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+      transition: box-shadow 0.5s;
+    }
+
+    .proj-img-wrap:hover {
+      box-shadow: 0 60px 120px -24px rgba(0, 0, 0, 0.9), inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 0 80px -30px rgba(255, 255, 255, 0.06);
+    }
+
+    .proj-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: grayscale(100%);
+      transition: transform 1.2s cubic-bezier(0.19, 1, 0.22, 1), filter 0.6s var(--ease);
+    }
+
+    .proj-img-wrap:hover .proj-img {
+      transform: scale(1.08);
+      filter: grayscale(0%);
+    }
+
+    /* More Works button */
+    .more-works-wrap {
+      text-align: center;
+      padding: 80px 40px 40px;
+    }
+
+    .more-works-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 15px 36px;
+      border: 1px solid rgba(255, 255, 255, 0.9);
+      border-radius: 100px;
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: var(--ink);
+      background: #fff;
+      transition: all 0.35s var(--ease);
+      text-decoration: none;
+    }
+
+    .more-works-btn:hover {
+      border-color: #fff;
+      background: #fff;
+      transform: translateY(-3px);
+      box-shadow: 0 16px 40px -10px rgba(255, 255, 255, 0.2);
+    }
+
+    /* ── ABOUT SECTION ── */
+    .about-section {
+      padding: 140px 40px;
+      max-width: 1160px;
+      margin: 0 auto;
+    }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: start;
+      margin-top: 60px;
+    }
+
+    .about-bio {
+      font-family: var(--fh);
+      font-size: clamp(1.6rem, 3vw, 2.4rem);
+      font-weight: 400;
+      font-style: italic;
+      line-height: 1.45;
+      color: rgba(255, 255, 255, 0.9);
+      /* Enhanced text visibility */
+    }
+
+    .about-bio strong {
+      font-weight: 700;
+      font-style: normal;
+      color: #fff;
+    }
+
+    .about-bio em {
+      color: rgba(255, 255, 255, 0.4);
+    }
+
+    .milestones {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      background: var(--border);
+      border-radius: 20px;
+      overflow: hidden;
+      margin-bottom: 32px;
+    }
+
+    .milestone {
+      background: rgba(255, 255, 255, 0.025);
+      padding: 32px 28px;
+      text-align: left;
+      transition: background 0.3s;
+    }
+
+    .milestone-num {
+      font-family: var(--fh);
+      font-size: 3.2rem;
+      font-weight: 900;
+      font-style: italic;
+      color: var(--cream);
+      line-height: 1;
+      letter-spacing: -0.04em;
+      margin-bottom: 6px;
+    }
+
+    .milestone-label {
+      font-size: 0.75rem;
+      font-weight: 400;
+      color: var(--dim);
+      letter-spacing: 0.3px;
+    }
+
+    .about-desc {
+      font-size: 0.95rem;
+      line-height: 1.8;
+      color: var(--silver);
+    }
+
+    .about-desc strong {
+      color: var(--cream);
+      font-weight: 500;
+    }
+
+    /* ── PREVIOUS PORTFOLIO SECTION ── */
+    .portfolio-section {
+      padding: 140px 40px;
+      max-width: 1160px;
+      margin: 0 auto;
+    }
+
+    .portfolio-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
+      margin-top: 60px;
+    }
+
+    .portfolio-image-wrapper {
+      position: relative;
+      border-radius: 16px;
+      overflow: hidden;
+      aspect-ratio: 16 / 9;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      box-shadow: 0 40px 80px -20px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+      transition: box-shadow 0.5s;
+    }
+
+    .portfolio-image-wrapper:hover {
+      box-shadow: 0 60px 120px -24px rgba(0, 0, 0, 0.9), inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 0 80px -30px rgba(255, 255, 255, 0.06);
+    }
+
+    .portfolio-image {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      object-position: center;
+      display: block;
+      transition: transform 1.2s cubic-bezier(0.19, 1, 0.22, 1), filter 0.6s var(--ease);
+      filter: grayscale(100%);
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .portfolio-image-wrapper:hover .portfolio-image {
+      transform: scale(1.08);
+      filter: grayscale(0%);
+    }
+
+    .portfolio-content {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 32px;
+    }
+
+    .portfolio-desc {
+      font-size: clamp(0.95rem, 2vw, 1.1rem);
+      line-height: 1.8;
+      color: var(--silver);
+      text-align: center;
+    }
+
+    /* ── STACK SECTION ── */
+    .stack-section {
+      padding: 100px 40px 140px;
+    }
+
+    .stack-inner {
+      max-width: 1160px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .stack-group {
+      margin-top: 48px;
+      width: 100%;
+      text-align: center;
+    }
+
+    .stack-group-label {
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--dim);
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .stack-pills {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(150px, 200px));
+      gap: 12px;
+      margin-top: 16px;
+      justify-content: center;
+    }
+
+    .s-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 13px 24px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      font-size: 0.95rem;
+      font-weight: 400;
+      color: var(--silver);
+      transition: all 0.3s var(--ease);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .s-pill-icon {
+      width: 22px;
+      height: 22px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+    }
+
+    .s-pill-icon img {
+      width: 22px;
+      height: 22px;
+      object-fit: contain;
+    }
+
+    .icon-invert {
+      filter: invert(1);
+    }
+
+    /* ── EXPLORING ── */
+    /* REMOVED */
+
+    /* ── CONTACT SECTION ── */
+    .contact-section {
+      padding: 120px 40px 160px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .contact-bg {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .contact-bg::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 800px;
+      height: 800px;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.025) 0%, transparent 60%);
+      border-radius: 50%;
+    }
+
+    .contact-inner {
+      position: relative;
+      z-index: 2;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .contact-headline {
+      font-family: var(--fh);
+      font-size: clamp(2.8rem, 7vw, 6.5rem);
+      font-weight: 900;
+      letter-spacing: -0.04em;
+      line-height: 1.0;
+      color: var(--cream);
+      margin-bottom: 24px;
+    }
+
+    .contact-headline em {
+      font-style: italic;
+      font-weight: 200;
+      color: rgba(255, 255, 255, 0.35);
+    }
+
+    .contact-sub {
+      font-size: 1rem;
+      color: var(--silver);
+      line-height: 1.8;
+      margin-bottom: 56px;
+      max-width: 480px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .contact-links {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(200px, 260px));
+      gap: 12px;
+      justify-content: center;
+    }
+
+    .c-link {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 16px 20px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--silver);
+      transition: all 0.35s var(--ease);
+      width: 100%;
+    }
+
+    .c-link:hover {
+      border-color: rgba(255, 255, 255, 0.25);
+      background: rgba(255, 255, 255, 0.07);
+      color: var(--cream);
+      transform: translateY(-3px);
+      box-shadow: 0 16px 40px -12px rgba(0, 0, 0, 0.8);
+    }
+
+    .c-link-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.06);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.95rem;
+      flex-shrink: 0;
+    }
+
+    .c-link-info {
+      text-align: left;
+    }
+
+    .c-link-name {
+      color: var(--cream);
+      font-weight: 600;
+      font-size: 0.9rem;
+      display: block;
+    }
+
+    .c-link-handle {
+      color: var(--dim);
+      font-size: 0.74rem;
+      display: block;
+      margin-top: 2px;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      padding: 60px 40px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+      text-align: center;
+    }
+
+    .ft-logo img {
+      height: 56px;
+      width: auto;
+      object-fit: contain;
+      opacity: 0.6;
+    }
+
+    .ft-copy {
+      font-size: 0.75rem;
+      color: rgba(255, 255, 255, 0.18);
+    }
+
+    /* ── SCROLL REVEAL ── */
+    .rv {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity 1s var(--ease), transform 1s var(--ease);
+      will-change: opacity, transform;
+    }
+
+    .rv.in {
+      opacity: 1;
+      transform: none;
+    }
+
+    /* Reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    /* ── AI CHATBOX / SEARCH SECTION ── */
+    .ai-chatbox {
+      padding: 80px 40px;
+      max-width: 1200px;
+      margin: 0 auto;
+      font-family: var(--fb);
+    }
+
+    .chatbox-label {
+      text-align: center;
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.85);
+      margin-bottom: 24px;
+    }
+
+    .chatbox-title {
+      text-align: center;
+      font-family: var(--fh);
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+      color: var(--cream);
+      margin-bottom: 16px;
+    }
+
+    .chatbox-subtitle {
+      text-align: center;
+      font-size: 0.95rem;
+      color: var(--silver);
+      margin-bottom: 40px;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .chat-toggle {
+      display: none;
+    }
+
+    .chat-window {
+      position: static;
+      width: 100%;
+      max-width: 700px;
+      height: auto;
+      background: linear-gradient(180deg, rgba(8, 8, 8, 0.5) 0%, rgba(20, 20, 20, 0.5) 100%);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      opacity: 1;
+      visibility: visible;
+      transform: none;
+      transition: all 0.3s var(--ease);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+      margin: 0 auto;
+    }
+
+    .chat-window.open {
+      opacity: 1;
+      visibility: visible;
+      transform: none;
+    }
+
+    .chat-header {
+      padding: 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .chat-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--cream);
+    }
+
+    .chat-close {
+      display: none;
+    }
+
+    .chat-messages {
+      max-height: 400px;
+      overflow-y: auto;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .chat-messages::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .chat-messages::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .chat-messages::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 3px;
+    }
+
+    .chat-messages::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .message {
+      display: flex;
+      gap: 8px;
+      animation: slideIn 0.3s var(--ease);
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .message.user {
+      justify-content: flex-end;
+    }
+
+    .message-bubble {
+      max-width: 80%;
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-size: 0.9rem;
+      line-height: 1.4;
+      word-wrap: break-word;
+    }
+
+    .message.ai .message-bubble {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border);
+      color: var(--silver);
+    }
+
+    .message.user .message-bubble {
+      background: rgba(255, 255, 255, 0.15);
+      color: var(--cream);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .chat-input-area {
+      border-top: 1px solid var(--border);
+      padding: 16px 20px;
+      display: flex;
+      gap: 10px;
+    }
+
+    .chat-input {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 16px;
+      color: var(--cream);
+      font-size: 0.9rem;
+      font-family: var(--fb);
+      transition: all 0.3s;
+    }
+
+    .chat-input:focus {
+      outline: none;
+      border-color: var(--border-h);
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .chat-input::placeholder {
+      color: var(--dim);
+    }
+
+    .chat-send {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid var(--border-h);
+      border-radius: 8px;
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--cream);
+      transition: all 0.3s;
+      flex-shrink: 0;
+    }
+
+    .chat-send:hover {
+      background: rgba(255, 255, 255, 0.15);
+      transform: translateY(-2px);
+    }
+
+    .chat-send:active {
+      transform: translateY(0);
+    }
+
+    @media (max-width: 900px) {
+      .ai-chatbox {
+        padding: 60px 24px;
+      }
+
+      .chat-window {
+        max-width: 100%;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .ai-chatbox {
+        padding: 40px 24px;
+      }
+
+      .chatbox-title {
+        font-size: clamp(1.5rem, 5vw, 2rem);
+      }
+
+      .chat-input {
+        font-size: 0.85rem;
+        padding: 10px 12px;
+      }
+
+      .chat-send {
+        width: 40px;
+        height: 40px;
+      }
+
+      .chat-messages {
+        max-height: 300px;
+        padding: 16px;
+      }
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      .nav-links {
+        display: none;
+      }
+
+      .m-toggle {
+        display: block;
+      }
+
+      .nav-cta {
+        display: none;
+      }
+
+      .hero-title {
+        letter-spacing: -0.03em;
+      }
+
+      .proj-inner {
+        grid-template-columns: 1fr;
+        gap: 32px;
+      }
+
+      .proj-visual {
+        order: -1;
+      }
+
+      .proj-title {
+        font-size: clamp(2.4rem, 8vw, 3.5rem);
+      }
+
+      .works-scene {
+        gap: 60px;
+      }
+
+      .work-panel {
+        padding: 0;
+      }
+
+      .statement-section {
+        padding: 100px 24px;
+      }
+
+      .about-grid {
+        grid-template-columns: 1fr;
+        gap: 40px;
+      }
+
+      .portfolio-container {
+        grid-template-columns: 1fr;
+        gap: 40px;
+      }
+
+      .milestones {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .contact-section {
+        padding: 80px 24px 100px;
+      }
+
+      .contact-links {
+        grid-template-columns: 1fr;
+        max-width: 320px;
+        margin: 0 auto;
+      }
+
+      footer {
+        padding: 32px 24px;
+      }
+
+      .works-header {
+        padding: 80px 24px 40px;
+      }
+
+      .about-section {
+        padding: 80px 24px;
+      }
+
+      .stack-section {
+        padding: 60px 24px 80px;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .hero {
+        padding: 80px 24px 60px;
+      }
+
+      .cta-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .btn-pill {
+        justify-content: center;
+      }
+
+      .milestones {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .portfolio-section {
+        padding: 80px 24px;
+      }
+
+      .portfolio-container {
+        grid-template-columns: 1fr;
+        gap: 40px;
+        text-align: center;
+      }
+
+      .portfolio-image-wrapper {
+        aspect-ratio: 16 / 9;
+        margin: 0 auto;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Grain -->
+  <div id="grain" aria-hidden="true"></div>
+
+  <!-- Progress Bar -->
+  <div id="progress" aria-hidden="true"></div>
+
+  <!-- Top Nav -->
+  <header id="topnav" role="banner">
+    <a href="#" aria-label="Home">
+      <img src="assets/icon.png" alt="Syed Tanvir Islam" class="nav-logo">
+    </a>
+    <ul class="nav-links" role="list">
+      <li><a href="works.html">Works</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#stack">Stack</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <button class="m-toggle" id="m-toggle" aria-label="Open menu" aria-expanded="false">
+      <i class="fas fa-bars"></i>
+    </button>
+  </header>
+
+  <!-- Mobile Menu Overlay -->
+  <div class="mobile-menu" id="mobile-menu" role="dialog" aria-label="Navigation">
+    <a href="#" class="mobile-link">Home</a>
+    <a href="works.html" class="mobile-link">Works</a>
+    <a href="#about" class="mobile-link">About</a>
+    <a href="#stack" class="mobile-link">Stack</a>
+    <a href="#contact" class="mobile-link">Contact</a>
+  </div>
+
+  <main id="main-content">
+
+    <!-- ══ HERO ══ -->
+    <section class="hero">
+      <div class="hero-bg-text" aria-hidden="true">TANVIR</div>
+      <div class="hero-orb orb-a"></div>
+      <div class="hero-orb orb-b"></div>
+
+      <div class="hero-content">
+        <div class="hero-eyebrow">16 years old &mdash; zero shortcuts</div>
+        <h1 class="hero-title">
+          Crafting the web<br>
+          <em>the world deserves.</em>
+        </h1>
+        <p class="hero-sub">
+          I'm <strong>Syed Tanvir Islam</strong> — a front-end developer from <strong>Bangladesh</strong>.
+        </p>
+        <div class="cta-row">
+          <a href="#works" class="btn-pill btn-primary">
+            See my work
+            <i class="fas fa-arrow-down" style="font-size:0.75rem"></i>
+          </a>
+          <a href="https://github.com/syedtanvircodex" target="_blank" rel="noopener" class="btn-pill btn-ghost">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor">
+              <path
+                d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+            </svg>
+            GitHub
+          </a>
+        </div>
+      </div>
+    </section>
+    <section class="statement-section" aria-label="About statement">
+      <p class="statement-text" id="statement">
+        I focus on the details that most people miss. The spacing, the timing, the weight of a font. Every interface I
+        build is intentional and carefully crafted.
+      </p>
+    </section>
+
+    <!-- ══ WORKS ══ -->
+    <div id="works">
+      <div class="works-hdr rv">
+        <div class="statement-label">Selected Works</div>
+      </div>
+
+      <!-- sticky pin container — height set by JS -->
+      <div class="works-pin-outer" id="works-pin-outer">
+
+        <!-- sticky scene — panels swap inside here -->
+        <div class="works-scene" id="works-scene">
+
+          <article class="work-panel" id="panel-0">
+            <div class="proj-ghost" aria-hidden="true">01</div>
+            <div class="proj-inner">
+              <div class="work-meta">
+                <div class="proj-num">01 / 03</div>
+                <div class="proj-cat">Artificial Intelligence</div>
+                <h2 class="proj-title">Tanvir<em>AI</em></h2>
+                <p class="proj-desc">A real-time conversational AI interface with markdown rendering, async message
+                  processing, and a polished chat UX. Built to feel native — not like a demo.</p>
+                <div class="proj-tags">
+                  <span class="proj-tag">API Integration</span>
+                  <span class="proj-tag">Async JavaScript</span>
+                  <span class="proj-tag">Markdown Engine</span>
+                  <span class="proj-tag">UX/UI Design</span>
+                </div>
+                <a href="projects/tanvirai.html" target="_blank" rel="noopener noreferrer" class="proj-link">Start
+                  Chat</a>
+              </div>
+              <div class="proj-visual">
+                <div class="proj-img-wrap">
+                  <img src="assets/tanvirai.png" alt="TanvirAI — AI conversational interface" class="proj-img"
+                    loading="lazy">
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article class="work-panel" id="panel-1">
+            <div class="proj-ghost" aria-hidden="true">02</div>
+            <div class="proj-inner">
+              <div class="work-meta">
+                <div class="proj-num">02 / 03</div>
+                <div class="proj-cat">Debate &amp; Discussion</div>
+                <h2 class="proj-title">Debate<em>AI</em></h2>
+                <p class="proj-desc">An AI-powered debate arena with structured rounds, real-time feedback, and argument
+                  scoring. The future of critical thinking, online.</p>
+                <div class="proj-tags">
+                  <span class="proj-tag">AI Integration</span>
+                  <span class="proj-tag">Discussion Engine</span>
+                  <span class="proj-tag">Real-time UX</span>
+                </div>
+                <a href="projects/Debate-AI/debate-arena.html" target="_blank" rel="noopener noreferrer"
+                  class="proj-link">Join Debate</a>
+              </div>
+              <div class="proj-visual">
+                <div class="proj-img-wrap">
+                  <img src="assets/debateai.png" alt="Debate AI — AI-powered debate arena" class="proj-img"
+                    loading="lazy">
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article class="work-panel" id="panel-2">
+            <div class="proj-ghost" aria-hidden="true">03</div>
+            <div class="proj-inner">
+              <div class="work-meta">
+                <div class="proj-num">03 / 03</div>
+                <div class="proj-cat">E-Commerce</div>
+                <h2 class="proj-title"><em>Mr.</em>Premium</h2>
+                <p class="proj-desc">A high-conversion digital goods storefront engineered for clarity and speed. Clean
+                  shopping experience, zero friction — built from the ground up.</p>
+                <div class="proj-tags">
+                  <span class="proj-tag">HTML5</span>
+                  <span class="proj-tag">CSS3</span>
+                  <span class="proj-tag">JavaScript</span>
+                  <span class="proj-tag">Conversion-Focused</span>
+                </div>
+                <a href="projects/MrPremiumApp/" target="_blank" rel="noopener noreferrer" class="proj-link">Live
+                  Demo</a>
+              </div>
+              <div class="proj-visual">
+                <div class="proj-img-wrap">
+                  <img src="assets/mrpremium.png" alt="Mr.Premium App — E-commerce digital goods store" class="proj-img"
+                    loading="lazy">
+                </div>
+              </div>
+            </div>
+          </article>
+
+        </div><!-- /works-scene -->
+
+      </div><!-- /pin-outer -->
+
+      <div class="more-works-wrap">
+        <a href="works.html" class="more-works-btn">More Works <i class="fas fa-arrow-right"
+            style="font-size:0.75rem"></i></a>
+      </div>
+
+    </div><!-- /#works -->
+
+
+    <!-- ══ ABOUT ══ -->
+    <section id="about" class="about-section">
+      <div class="rv">
+        <div class="statement-label">About me</div>
+      </div>
+      <div class="about-grid">
+        <div class="about-bio" style="transition-delay: 80ms">
+          <strong>I build systems,</strong> not just websites. From AI interfaces to 3D visualizations to real-time
+          applications, I tackle complex problems that most people avoid at 16.
+        </div>
+        <div class="about-right">
+          <div class="milestones rv" style="transition-delay: 120ms">
+            <div class="milestone">
+              <div class="milestone-num">12+</div>
+              <div class="milestone-label">Live projects deployed</div>
+            </div>
+            <div class="milestone">
+              <div class="milestone-num">3</div>
+              <div class="milestone-label">Unique tech stacks</div>
+            </div>
+            <div class="milestone">
+              <div class="milestone-num">16</div>
+              <div class="milestone-label">Years old</div>
+            </div>
+            <div class="milestone">
+              <div class="milestone-num">∞</div>
+              <div class="milestone-label">Learning never stops</div>
+            </div>
+          </div>
+          <p class="about-desc rv" style="transition-delay: 160ms">
+            Every detail, from layout to interaction, has a clear purpose. If it doesn’t improve the experience, it
+            doesn’t stay.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ PREVIOUS PORTFOLIO ══ -->
+    <section id="previous-portfolio" class="portfolio-section">
+      <div class="rv">
+        <div class="statement-label">Previous Portfolio</div>
+      </div>
+      <div class="portfolio-container">
+        <div class="portfolio-image-wrapper rv" style="transition-delay: 80ms">
+          <img src="assets/previoussnapshot.png" alt="Previous Portfolio Version" class="portfolio-image" />
+        </div>
+        <div class="portfolio-content rv" style="transition-delay: 120ms">
+          <p class="portfolio-desc">
+            This is my earlier portfolio version showcasing my initial projects and design approach. 
+            It represents my journey and growth as a developer.
+          </p>
+          <div class="cta-row">
+            <a href="https://syedtanvir.great-site.net" target="_blank" rel="noopener noreferrer" class="btn-pill btn-ghost">
+              View Old Version
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ TECH STACK ══ -->
+    <section id="stack" class="stack-section">
+      <div class="stack-inner">
+        <div class="statement-label rv">Tech Stack</div>
+        <div class="stack-group rv" style="transition-delay:60ms">
+          <div class="stack-group-label">Frontend</div>
+          <div class="stack-pills">
+            <div class="s-pill">
+              <div class="s-pill-icon"><img loading="lazy"
+                  src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/html5/html5-original.svg" alt="HTML5">
+              </div><span>HTML5</span>
+            </div>
+            <div class="s-pill">
+              <div class="s-pill-icon"><img loading="lazy"
+                  src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/css3/css3-original.svg" alt="CSS3">
+              </div><span>CSS3</span>
+            </div>
+            <div class="s-pill">
+              <div class="s-pill-icon"><img loading="lazy"
+                  src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/javascript/javascript-original.svg"
+                  alt="JavaScript"></div><span>JavaScript</span>
+            </div>
+            <div class="s-pill">
+              <div class="s-pill-icon"><img loading="lazy"
+                  src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/typescript/typescript-original.svg"
+                  alt="TypeScript"></div><span>TypeScript</span>
+            </div>
+            <div class="s-pill">
+              <div class="s-pill-icon"><img loading="lazy"
+                  src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/react/react-original.svg" alt="React">
+              </div><span>React</span>
+            </div>
+            <div class="s-pill">
+              <div class="s-pill-icon"><img loading="lazy"
+                  src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/tailwindcss/tailwindcss-original.svg"
+                  alt="Tailwind CSS"></div><span>Tailwind CSS</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="stack-group rv" style="transition-delay:100ms">
+          <div class="stack-group-label">Backend</div>
+          <div class="stack-pills">
+            <div class="s-pill">
+              <div class="s-pill-icon"><img loading="lazy"
+                  src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/nodejs/nodejs-original.svg"
+                  alt="Node.js"></div><span>Node.js</span>
+            </div>
+            <div class="s-pill">
+              <div class="s-pill-icon"><img loading="lazy"
+                  src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/python/python-original.svg"
+                  alt="Python"></div><span>Python</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="stack-group rv" style="transition-delay:140ms">
+          <div class="stack-group-label">Database &amp; Services</div>
+          <div class="stack-pills">
+            <div class="s-pill">
+              <div class="s-pill-icon"><img loading="lazy"
+                  src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/firebase/firebase-original.svg"
+                  alt="Firebase"></div><span>Firebase</span>
+            </div>
+            <div class="s-pill">
+              <div class="s-pill-icon"><img loading="lazy"
+                  src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/supabase/supabase-original.svg"
+                  alt="Supabase"></div><span>Supabase</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="stack-group rv" style="transition-delay:180ms">
+          <div class="stack-group-label">Tools &amp; Deployment</div>
+          <div class="stack-pills">
+            <div class="s-pill">
+              <div class="s-pill-icon"><img loading="lazy"
+                  src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/git/git-original.svg" alt="Git"></div>
+              <span>Git</span>
+            </div>
+            <div class="s-pill">
+              <div class="s-pill-icon"><img loading="lazy"
+                  src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/github/github-original.svg"
+                  class="icon-invert" alt="GitHub"></div><span>GitHub</span>
+            </div>
+            <div class="s-pill">
+              <div class="s-pill-icon"><img loading="lazy"
+                  src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/vercel/vercel-original.svg"
+                  class="icon-invert" alt="Vercel"></div><span>Vercel</span>
+            </div>
+            <div class="s-pill">
+              <div class="s-pill-icon"><img loading="lazy"
+                  src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/netlify/netlify-original.svg"
+                  alt="Netlify"></div><span>Netlify</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ CONTACT ══ -->
+    <section id="contact" class="contact-section">
+      <div class="contact-bg"></div>
+      <div class="contact-inner">
+        <div class="statement-label rv">Contact</div>
+        <h2 class="contact-headline rv">
+          Let's build<br><em>something real.</em>
+        </h2>
+        <p class="contact-sub rv" style="transition-delay:60ms">
+          Whether it's a project, a collaboration, or a question —
+          reach out and I'll get back to you.
+        </p>
+        <div class="contact-links rv" style="transition-delay:120ms">
+          <a class="c-link" href="mailto:syedtanvirislam20@gmail.com">
+            <div class="c-link-icon"><i class="fas fa-envelope"></i></div>
+            <div class="c-link-info">
+              <span class="c-link-name">Email</span>
+              <span class="c-link-handle">syedtanvirislam20@gmail.com</span>
+            </div>
+          </a>
+          <a class="c-link" href="https://github.com/syedtanvircodex" target="_blank" rel="noopener noreferrer">
+            <div class="c-link-icon"><i class="fab fa-github"></i></div>
+            <div class="c-link-info">
+              <span class="c-link-name">GitHub</span>
+              <span class="c-link-handle">syedtanvircodex</span>
+            </div>
+          </a>
+          <a class="c-link" href="https://wa.me/+8801921575251" target="_blank" rel="noopener noreferrer">
+            <div class="c-link-icon"><i class="fab fa-whatsapp"></i></div>
+            <div class="c-link-info">
+              <span class="c-link-name">WhatsApp</span>
+              <span class="c-link-handle">+880 1921 575251</span>
+            </div>
+          </a>
+          <a class="c-link" href="https://discord.com/users/1392841948498493451" target="_blank"
+            rel="noopener noreferrer">
+            <div class="c-link-icon">
+              <svg width="17" height="13" viewBox="0 0 127.14 96.36" fill="currentColor">
+                <path
+                  d="M107.7,8.07A105.15,105.15,0,0,0,81.47,0a72.06,72.06,0,0,0-3.36,6.83A97.68,97.68,0,0,0,49,6.83,72.37,72.37,0,0,0,45.64,0A105.89,105.89,0,0,0,19.39,8.09C2.79,32.65-1.71,56.6.54,80.21h0A105.73,105.73,0,0,0,32.71,96.36,77.7,77.7,0,0,0,39.6,85.25a68.42,68.42,0,0,1-10.85-5.18c.91-.66,1.8-1.34,2.66-2a77.15,77.15,0,0,0,64.32,0c.87.71,1.76,1.39,2.66,2a68.68,68.68,0,0,1-10.87,5.19,77,77,0,0,0,6.89,11.1A105.73,105.73,0,0,0,126.6,80.22h0C129.24,55.41,122.47,32.01,107.7,8.07ZM42.45,65.69C36.18,65.69,31,60.55,31,53.88s5-11.75,11.45-11.75S54,47.16,53.89,53.88,48.84,65.69,42.45,65.69Zm42.24,0C78.41,65.69,73.25,60.55,73.25,53.88s5-11.75,11.45-11.75S96.23,47.16,96.12,53.88,91.08,65.69,84.69,65.69Z" />
+              </svg>
+            </div>
+            <div class="c-link-info">
+              <span class="c-link-name">Discord</span>
+              <span class="c-link-handle">Dokja</span>
+            </div>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ AI CHATBOX / SEARCH SECTION ══ -->
+    <section class="ai-chatbox" id="ai-chatbox-section">
+      <div class="chatbox-label rv">Ask Anything</div>
+      <h2 class="chatbox-title rv">Let's Chat</h2>
+      <p class="chatbox-subtitle rv">Have a question? Ask me anything about my work, skills, or just chat!</p>
+      <div class="chat-window" id="chat-window">
+        <div class="chat-header">
+          <div class="chat-title">Chat with Me</div>
+        </div>
+        <div class="chat-messages" id="chat-messages">
+          <div class="message ai">
+            <div class="message-bubble">Hi! I'm Tanvir's AI assistant. Ask me anything about my work, skills, or let's
+              just chat!</div>
+          </div>
+        </div>
+        <div class="chat-input-area">
+          <input type="text" class="chat-input" id="chat-input" placeholder="Type your message..." />
+          <button class="chat-send" id="chat-send" aria-label="Send message">
+            <i class="fas fa-paper-plane"></i>
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <a href="#" class="ft-logo"><img src="assets/icon.png" alt="STI Logo"></a>
+    <p class="ft-copy">&copy; 2026 Syed Tanvir Islam. All rights reserved.</p>
+  </footer>
+
+  <script>
+    /* ════════════════════════════════════════════
+       TOP NAV SCROLL STATE
+    ════════════════════════════════════════════ */
+    const topnav = document.getElementById('topnav');
+    window.addEventListener('scroll', () => {
+      topnav.classList.toggle('scrolled', window.scrollY > 80);
+    }, {
+      passive: true
+    });
+
+    // Initialize animations
+    initAnimations();
+
+    /* ════════════════════════════════════════════
+       HASH NAVIGATION (scroll to section on load)
+    ════════════════════════════════════════════ */
+    function scrollToHash() {
+      const hash = window.location.hash;
+      if (hash) {
+        setTimeout(() => {
+          const id = hash.substring(1);
+          const element = document.getElementById(id);
+          if (element) {
+            element.scrollIntoView({
+              behavior: 'smooth'
+            });
+          }
+        }, 100);
+      }
+    }
+
+    // Call on page load
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', scrollToHash);
+    } else {
+      scrollToHash();
+    }
+
+    // Also handle hash change when navigating with back/forward buttons
+    window.addEventListener('hashchange', scrollToHash);
+
+    /* ════════════════════════════════════════════
+       PROGRESS BAR
+    ════════════════════════════════════════════ */
+    const progressBar = document.getElementById('progress');
+
+    function updateProgress() {
+      const scrollTop = window.scrollY || document.documentElement.scrollTop;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const pct = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+      progressBar.style.width = pct.toFixed(2) + '%';
+    }
+    window.addEventListener('scroll', updateProgress, {
+      passive: true
+    });
+
+    /* ════════════════════════════════════════════
+       MOBILE MENU
+    ════════════════════════════════════════════ */
+    const mToggle = document.getElementById('m-toggle');
+    const mobileMenu = document.getElementById('mobile-menu');
+
+    function closeMobileMenu() {
+      mobileMenu.classList.remove('open');
+      mToggle.setAttribute('aria-expanded', 'false');
+      document.body.style.overflow = '';
+    }
+
+    mToggle.addEventListener('click', () => {
+      if (mobileMenu.classList.contains('open')) {
+        closeMobileMenu();
+      } else {
+        mobileMenu.classList.add('open');
+        mToggle.setAttribute('aria-expanded', 'true');
+        document.body.style.overflow = 'hidden';
+      }
+    });
+
+    // Close menu when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!mobileMenu.contains(e.target) && !mToggle.contains(e.target)) {
+        closeMobileMenu();
+      }
+    });
+
+    // Close menu when clicking on a link
+    document.querySelectorAll('.mobile-link').forEach(link => {
+      link.addEventListener('click', closeMobileMenu);
+    });
+
+    /* ════════════════════════════════════════════
+       ALL ANIMATIONS (called after preloader hides)
+    ════════════════════════════════════════════ */
+    function initAnimations() {
+      gsap.registerPlugin(ScrollTrigger);
+
+      // Check if user prefers reduced motion
+      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      /* ── Hero entrance ── */
+      const heroTl = gsap.timeline({
+        defaults: {
+          ease: 'power4.out'
+        }
+      });
+
+      if (prefersReducedMotion) {
+        // For reduced motion, instantly show all elements
+        heroTl
+          .set('.hero-eyebrow', { opacity: 1, y: 0 }, 0)
+          .set('.hero-title', { opacity: 1, y: 0 }, 0)
+          .set('.hero-sub', { opacity: 1, y: 0 }, 0)
+          .set('.cta-row', { opacity: 1, y: 0 }, 0)
+          .set('.hero-bg-text', { opacity: 1, scale: 1 }, 0);
+      } else {
+        // Original staggered animations
+        heroTl
+          .from('.hero-eyebrow', {
+            opacity: 0,
+            y: 12,
+            duration: 0.7
+          }, 0.45)
+          .from('.hero-title', {
+            opacity: 0,
+            y: 40,
+            duration: 1.1
+          }, 0.55)
+          .from('.hero-sub', {
+            opacity: 0,
+            y: 24,
+            duration: 0.9
+          }, 0.85)
+          .from('.cta-row', {
+            opacity: 0,
+            y: 18,
+            duration: 0.8
+          }, 1.0)
+          .from('.hero-bg-text', {
+            opacity: 0,
+            duration: 1.5,
+            scale: 1.04
+          }, 0.2);
+      }
+
+      /* ── Statement word-by-word scrub ── */
+      const stmtEl = document.getElementById('statement');
+      const rawText = stmtEl.textContent;
+      const words = rawText.split(/(\s+)/);
+      stmtEl.innerHTML = words.map(w =>
+        w.trim() ? `<span class="word">${w}</span>` : w
+      ).join('');
+
+      gsap.fromTo('.word', {
+        opacity: 0.12,
+        y: 10
+      }, {
+        opacity: 1,
+        y: 0,
+        ease: 'power2.inOut',
+        scrollTrigger: {
+          trigger: '.statement-section',
+          start: 'top 75%',
+          end: 'top 25%',
+          scrub: 0.6,
+          fastScrollSensitivity: 3,
+          invalidateOnRefresh: true,
+        }
+      });
+
+      /* ── About bio word-by-word scrub ── */
+      const bioEl = document.querySelector('.about-bio');
+      if (bioEl) {
+        const bioText = bioEl.textContent;
+        const bioWords = bioText.split(/(\s+)/);
+        bioEl.innerHTML = bioWords.map(w =>
+          w.trim() ? `<span class="bio-word">${w}</span>` : w
+        ).join('');
+
+        gsap.fromTo('.bio-word', {
+          opacity: 0.12,
+          y: 10
+        }, {
+          opacity: 1,
+          y: 0,
+          ease: 'power2.inOut',
+          scrollTrigger: {
+            trigger: '.about-section',
+            start: 'top 75%',
+            end: 'top 25%',
+            scrub: 0.6,
+            fastScrollSensitivity: 3,
+            invalidateOnRefresh: true,
+          }
+        });
+      }
+
+      /* ── Hero parallax on scroll ── */
+      gsap.to('.hero-bg-text', {
+        yPercent: 20,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: '.hero',
+          start: 'top top',
+          end: 'bottom top',
+          scrub: true,
+        }
+      });
+
+      /* ── Work scroll reveal (static layout) ── */
+      const panels = document.querySelectorAll('.work-panel');
+      panels.forEach((panel) => {
+        gsap.fromTo(panel, {
+          opacity: 0,
+          y: 40
+        }, {
+          opacity: 1,
+          y: 0,
+          duration: 1,
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: panel,
+            start: 'top 85%',
+          }
+        });
+      });
+
+      /* ── Standard scroll reveals ── */
+      const io = new IntersectionObserver((entries, obs) => {
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            e.target.classList.add('in');
+            obs.unobserve(e.target);
+          }
+        });
+      }, {
+        threshold: 0.1,
+        rootMargin: '0px 0px -40px 0px'
+      });
+      document.querySelectorAll('.rv').forEach(el => io.observe(el));
+
+      /* ── Milestone counters ── */
+      function easeOut(t) {
+        return 1 - Math.pow(1 - t, 3);
+      }
+
+      function animCounter(el, target, suffix, dur = 1200) {
+        const start = performance.now();
+        const isFloat = target % 1 !== 0;
+
+        function step(now) {
+          const prog = Math.min((now - start) / dur, 1);
+          const val = easeOut(prog) * target;
+          el.textContent = (isFloat ? val.toFixed(1) : Math.floor(val)) + suffix;
+          if (prog < 1) requestAnimationFrame(step);
+          else el.textContent = target + suffix;
+        }
+        requestAnimationFrame(step);
+      }
+      const milestoneObs = new IntersectionObserver((entries, obs) => {
+        entries.forEach(e => {
+          if (!e.isIntersecting) return;
+          const numEl = e.target.querySelector('.milestone-num');
+          if (!numEl) return;
+          const raw = numEl.textContent.trim();
+          const suffix = raw.replace(/[\d.]/g, '');
+          const target = parseFloat(raw.replace(/[^\d.]/g, ''));
+          if (!isNaN(target)) animCounter(numEl, target, suffix);
+          obs.unobserve(e.target);
+        });
+      }, {
+        threshold: 0.5
+      });
+      document.querySelectorAll('.milestone').forEach(m => milestoneObs.observe(m));
+
+      /* ── Contact section parallax ── */
+      gsap.to('.contact-bg', {
+        scale: 1.15,
+        scrollTrigger: {
+          trigger: '.contact-section',
+          start: 'top bottom',
+          end: 'bottom top',
+          scrub: true,
+        }
+      });
+
+
+
+    } // end initAnimations
+
+    /* ════════════════════════════════════════════
+       AI CHATBOX WITH GROQ API
+    ════════════════════════════════════════════ */
+    const chatWindow = document.getElementById('chat-window');
+    const chatInput = document.getElementById('chat-input');
+    const chatSend = document.getElementById('chat-send');
+    const chatMessages = document.getElementById('chat-messages');
+
+    const GROQ_API_KEY = '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';
+    const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
+    const GROQ_MODEL = 'llama-3.3-70b-versatile';
+
+    // Tech stack data
+    const techStack = {
+      frontend: ['HTML5', 'CSS3', 'JavaScript', 'TypeScript', 'React', 'Tailwind CSS'],
+      backend: ['Node.js', 'Python'],
+      database: ['Firebase', 'Supabase'],
+      tools: ['Git', 'GitHub', 'Vercel', 'Netlify']
+    };
+
+    const allTechs = Object.values(techStack).flat().map(t => t.toLowerCase());
+
+    // System prompt with rules
+    const systemPrompt =
+      `You are Tanvir's AI assistant. Tanvir is a 16-year-old self-taught Front-End Developer from Bangladesh.
+
+CRITICAL RULES - FOLLOW STRICTLY:
+
+1. BASIC INFO QUESTIONS (name, age, location, phone, email):
+   - Full Name: Syed Tanvir Islam
+   - Age: 16 years old
+   - Location: Dhaka, Bangladesh
+   - Phone: +880 1921575251
+   - Email: syedtanvirislam20@gmail.com
+   Answer these directly and naturally!
+
+2. RESTRICTED PERSONAL QUESTIONS (address, personal life, family, etc.):
+   Respond: "I prefer to keep those details private. But you can find more info through my contact page!"
+
+3. SKILLS/TECH STACK QUESTIONS:
+   - ONLY mention these technologies: HTML5, CSS3, JavaScript, TypeScript, React, Tailwind CSS (Frontend), Node.js, Python (Backend), Firebase, Supabase (Database), Git, GitHub, Vercel, Netlify (Tools)
+   - DO NOT mention other technologies, frameworks, or languages
+   - If asked about something outside this list, say: "I haven't worked with that. My current focus is on [list relevant stack]. Check out my Tech Stack section to see what I actually use!"
+
+4. JOB OFFERS/MONEY/SPONSORSHIP:
+   Respond: "Thanks for the opportunity! I'm currently 16 years old, so I can't take paid positions. However, I'm always open to exciting projects or collaborations! Feel free to reach out through my contact page or socials to discuss potential projects."
+
+5. IRRELEVANT/OFF-TOPIC/SPAM:
+   Keep responses professional and redirect to Tanvir's work/portfolio. Example: "That's interesting! But I'm here to talk about my work and projects. Want to know about my tech stack or recent projects?"
+
+6. GENERAL QUESTIONS about work/portfolio/skills:
+   Provide helpful, accurate information based on the portfolio context.
+
+Keep responses concise (2-3 sentences max), professional, and helpful. Always stay in character as Tanvir's assistant.`;
+
+    function addMessage(text, isUser = false) {
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `message ${isUser ? 'user' : 'ai'}`;
+
+      const bubble = document.createElement('div');
+      bubble.className = 'message-bubble';
+      bubble.textContent = text;
+
+      messageDiv.appendChild(bubble);
+      chatMessages.appendChild(messageDiv);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function showTypingIndicator() {
+      const messageDiv = document.createElement('div');
+      messageDiv.className = 'message ai';
+      messageDiv.id = 'typing-indicator';
+
+      const bubble = document.createElement('div');
+      bubble.className = 'message-bubble';
+      bubble.textContent = 'Thinking...';
+      bubble.style.opacity = '0.6';
+
+      messageDiv.appendChild(bubble);
+      chatMessages.appendChild(messageDiv);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function removeTypingIndicator() {
+      const indicator = document.getElementById('typing-indicator');
+      if (indicator) indicator.remove();
+    }
+
+    async function getAIResponse(userMessage) {
+      try {
+        showTypingIndicator();
+
+        const response = await fetch(GROQ_API_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${GROQ_API_KEY}`
+          },
+          body: JSON.stringify({
+            model: GROQ_MODEL,
+            messages: [{
+              role: 'system',
+              content: systemPrompt
+            },
+            {
+              role: 'user',
+              content: userMessage
+            }
+            ],
+            temperature: 0.7,
+            max_tokens: 1024
+          })
+        });
+
+        removeTypingIndicator();
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          console.error('API Error:', response.status, errorData);
+
+          if (response.status === 401) {
+            return "Authentication failed. Please check the API key.";
+          }
+          if (response.status === 429) {
+            return "Rate limited. Please wait a moment and try again.";
+          }
+          throw new Error(`API error: ${response.status}`);
+        }
+
+        const data = await response.json();
+        let aiResponse = data.choices[0].message.content.trim();
+
+        // Additional moderation check to ensure no over-sharing
+        aiResponse = moderateResponse(aiResponse, userMessage);
+
+        return aiResponse;
+      } catch (error) {
+        removeTypingIndicator();
+        console.error('Error calling Groq API:', error);
+        return "Sorry, I'm having trouble connecting right now. Please try again in a moment!";
+      }
+    }
+
+    function moderateResponse(response, userMessage) {
+      const lowerMessage = userMessage.toLowerCase();
+      const lowerResponse = response.toLowerCase();
+
+      // Check if asking about skills/tech
+      if (lowerMessage.includes('skill') || lowerMessage.includes('tech') || lowerMessage.includes('language') ||
+        lowerMessage.includes('framework')) {
+        // Only allow tech from our stack
+        const mentionedTechs = allTechs.filter(tech => lowerResponse.includes(tech));
+        if (mentionedTechs.length === 0 && lowerResponse.length > 50) {
+          // Response mentions other techs, sanitize it
+          return "I primarily work with HTML5, CSS3, JavaScript, TypeScript, React, Tailwind CSS on the frontend, Node.js and Python for backend, Firebase and Supabase for databases, and Git/GitHub/Vercel for deployment. Check out my Tech Stack section for more details!";
+        }
+      }
+
+      // Check for personal info leakage
+      if (lowerResponse.includes('phone') || lowerResponse.includes('address') || lowerResponse.includes('email')) {
+        return "For personal contact, please use my contact page or reach out through my socials!";
+      }
+
+      return response;
+    }
+
+    async function sendMessage() {
+      const text = chatInput.value.trim();
+      if (!text) return;
+
+      chatSend.disabled = true;
+      chatInput.disabled = true;
+
+      addMessage(text, true);
+      chatInput.value = '';
+
+      const response = await getAIResponse(text);
+      addMessage(response, false);
+
+      chatSend.disabled = false;
+      chatInput.disabled = false;
+      chatInput.focus();
+    }
+
+    chatSend.addEventListener('click', sendMessage);
+
+    chatInput.addEventListener('keypress', e => {
+      if (e.key === 'Enter' && !chatSend.disabled) sendMessage();
+    });
+  </script>
+</body>
+
+</html>

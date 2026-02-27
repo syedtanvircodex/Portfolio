@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Thank You - Mr.Premium App</title>
+  <meta name="description" content="Thank you for your order — Mr.Premium App. Your order details and next steps are shown on this page.">
+  <link rel="icon" type="image/png" sizes="32x32" href="logo.png?v=4" />
+  <link rel="icon" type="image/png" sizes="16x16" href="logo.png?v=4" />
+  <link rel="shortcut icon" href="logo.png?v=4" />
+  <link rel="apple-touch-icon" href="logo.png?v=4" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="stylesheet" href="assets/css/styles.css" />
+  <style>
+    .thank-you-container {
+      max-width: 600px;
+      margin: 0 auto 60px;
+      background: var(--paper);
+      padding: 40px;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--outline);
+      box-shadow: var(--shadow-soft);
+      text-align: center;
+    }
+
+    .success-icon {
+      font-size: 4rem;
+      color: var(--accent);
+      margin-bottom: 20px;
+    }
+
+    .thank-you-container h1 {
+      color: var(--night);
+      margin-bottom: 20px;
+      font-size: 2.5rem;
+    }
+
+    .thank-you-container p {
+      font-size: 1.1rem;
+      line-height: 1.6;
+      color: var(--slate);
+      margin-bottom: 30px;
+    }
+
+    .order-info {
+      background: #f7f8fb;
+      padding: 20px;
+      border-radius: 14px;
+      border: 1px solid var(--outline);
+      margin-bottom: 30px;
+      text-align: left;
+    }
+
+    .order-info h3 {
+      margin-bottom: 15px;
+      color: var(--night);
+    }
+
+    .order-detail {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      padding: 5px 0;
+    }
+
+    .order-detail:not(:last-child) {
+      border-bottom: 1px solid var(--outline);
+    }
+
+    .order-detail strong {
+      color: var(--night);
+    }
+
+    .whatsapp-section {
+      background: #edf2ff;
+      padding: 20px;
+      border-radius: 14px;
+      margin-bottom: 30px;
+    }
+
+    .whatsapp-section h3 {
+      color: var(--accent);
+      margin-bottom: 15px;
+    }
+
+    .whatsapp-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      background: #1e8e3e;
+      color: white;
+      text-decoration: none;
+      padding: 15px 25px;
+      border-radius: 12px;
+      font-weight: bold;
+      transition: background 0.3s ease;
+    }
+
+    .whatsapp-link:hover {
+      background: #136b2c;
+    }
+
+    .whatsapp-link img {
+      width: 24px;
+      height: 24px;
+    }
+
+    .action-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      align-items: stretch;
+      margin-top: 10px;
+    }
+
+    .btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      cursor: pointer;
+      text-decoration: none;
+      display: block;
+      width: 100%;
+      box-sizing: border-box;
+      transition: background 0.3s ease;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #0b57c9, #1c3f9b);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #0a4cad, #1a3580);
+    }
+
+    .btn-secondary {
+      background: #1f232b;
+      color: white;
+    }
+
+    .btn-secondary:hover {
+      background: #2b313b;
+    }
+
+    @media (max-width: 768px) {
+      .thank-you-container {
+        margin: 20px;
+        padding: 30px 20px;
+      }
+
+      .action-buttons {
+        gap: 12px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header id="site-header"></header>
+
+  <div class="thank-you-container">
+    <div class="success-icon">&check;</div>
+    <h1>Thank You!</h1>
+    <p>We have received your order and will deliver your product to your email address shortly.</p>
+
+    <div class="order-info" id="order-info">
+      <h3>Order Details</h3>
+      <div class="order-detail">
+        <span>Order ID:</span>
+        <strong id="order-id">Loading...</strong>
+      </div>
+      <div class="order-detail">
+        <span>Product:</span>
+        <strong id="product-name">Loading...</strong>
+      </div>
+      <div class="order-detail">
+        <span>Amount:</span>
+        <strong id="order-amount">Loading...</strong>
+      </div>
+      <div class="order-detail">
+        <span>Customer:</span>
+        <strong id="customer-name">Loading...</strong>
+      </div>
+    </div>
+
+    <div class="whatsapp-section">
+      <h3>Need Help?</h3>
+      <p>If you have any questions about your order, please contact us on WhatsApp:</p>
+      <a href="https://wa.me/+8801704336936" target="_blank" rel="noopener noreferrer" class="whatsapp-link">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/240px-WhatsApp.svg.png"
+          alt="WhatsApp" />
+        Contact WhatsApp
+      </a>
+    </div>
+
+    <div class="action-buttons">
+      <a href="products.html" class="btn btn-primary">Continue Shopping</a>
+      <a href="index.html" class="btn btn-secondary">Back to Home</a>
+    </div>
+  </div>
+
+  <footer id="site-footer"></footer>
+
+  <script src="assets/js/components.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="assets/js/firebase-config.js" defer></script>
+  <script src="assets/js/script.js" defer></script>
+  <script src="assets/js/thank-you.js" defer></script>
+
+</body>
+
+</html>

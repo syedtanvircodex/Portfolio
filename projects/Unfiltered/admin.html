@@ -1,0 +1,907 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Admin Unfiltered</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@500;700&family=JetBrains+Mono:wght@400&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            /* Core Palette - Zinc Dark */
+            --bg-app: #09090b;
+            --bg-panel: #18181b;
+            --bg-element: #27272a;
+
+            --border: #27272a;
+            --border-hover: #3f3f46;
+
+            --text-primary: #f4f4f5;
+            --text-secondary: #a1a1aa;
+            --text-tertiary: #71717a;
+
+            --accent: #fff;
+            --danger: #ef4444;
+            --danger-bg: rgba(239, 68, 68, 0.1);
+
+            /* Dimensions & Spacing */
+            --sidebar-width: 260px;
+            --header-mobile: 60px;
+            --radius-md: 12px;
+            --radius-sm: 8px;
+
+            /* Animation */
+            --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* --- Reset & Base --- */
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            outline: none;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-app);
+            color: var(--text-primary);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+        }
+
+        /* --- Typography --- */
+        h1,
+        h2,
+        .brand {
+            font-family: 'Playfair Display', serif;
+        }
+
+        .mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* --- Utilities --- */
+        .hidden {
+            display: none !important;
+        }
+
+        .flex {
+            display: flex;
+        }
+
+        .flex-col {
+            flex-direction: column;
+        }
+
+        .items-center {
+            align-items: center;
+        }
+
+        .justify-between {
+            justify-content: space-between;
+        }
+
+        .gap-2 {
+            gap: 0.5rem;
+        }
+
+        .gap-4 {
+            gap: 1rem;
+        }
+
+        /* --- Sidebar (Desktop) --- */
+        aside {
+            width: var(--sidebar-width);
+            background: var(--bg-app);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            padding: 1.5rem;
+            z-index: 50;
+            transition: transform 0.3s var(--ease-smooth);
+        }
+
+        .brand {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 3rem;
+            display: block;
+            text-decoration: none;
+            letter-spacing: -0.02em;
+        }
+
+        .brand span {
+            color: var(--danger);
+        }
+
+        .nav-btn {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            width: 100%;
+            padding: 0.85rem 1rem;
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--text-secondary);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            margin-bottom: 4px;
+        }
+
+        .nav-btn:hover {
+            background: var(--bg-element);
+            color: var(--text-primary);
+        }
+
+        .nav-btn.active {
+            background: var(--bg-panel);
+            border-color: var(--border);
+            color: var(--text-primary);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .nav-divider {
+            height: 1px;
+            background: var(--border);
+            margin: 1.5rem 0;
+            opacity: 0.5;
+        }
+
+        /* --- Main Content --- */
+        main {
+            flex: 1;
+            position: relative;
+            overflow-y: auto;
+            scroll-behavior: smooth;
+            padding: 2rem 3rem;
+            background: var(--bg-app);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 2.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .section-title {
+            font-size: 2rem;
+            margin: 0;
+        }
+
+        .section-meta {
+            color: var(--text-tertiary);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+        }
+
+        /* --- Mobile Header --- */
+        .mobile-header {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: var(--header-mobile);
+            background: rgba(9, 9, 11, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            z-index: 60;
+            padding: 0 1.25rem;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        /* --- Cards & Lists --- */
+        .card {
+            background: transparent;
+            border-bottom: 1px solid var(--border);
+            padding: 1.5rem 0;
+            transition: all 0.2s;
+        }
+
+        .card:hover {
+            border-color: var(--border-hover);
+            transform: translateX(4px);
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .card-meta {
+            display: flex;
+            gap: 10px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            align-items: center;
+        }
+
+        .tag {
+            font-size: 0.7rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            border: 1px solid var(--border-hover);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* --- Forms & Inputs --- */
+        .editor-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            background: transparent;
+            color: var(--text-primary);
+            border: none;
+            transition: 0.2s;
+        }
+
+        .input-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            padding: 0.5rem 0;
+            border-bottom: 2px solid transparent;
+        }
+
+        .input-title:focus {
+            border-bottom-color: var(--border);
+        }
+
+        .input-title::placeholder {
+            color: var(--border-hover);
+        }
+
+        .input-content {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1rem;
+            line-height: 1.8;
+            color: var(--text-secondary);
+            min-height: 60vh;
+            resize: none;
+        }
+
+        .input-content:focus {
+            color: var(--text-primary);
+        }
+
+        .std-input {
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            padding: 12px 16px;
+            border-radius: var(--radius-sm);
+            font-size: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .std-input:focus {
+            border-color: var(--text-secondary);
+            background: var(--bg-element);
+        }
+
+        /* --- Buttons --- */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+            background: var(--bg-element);
+            color: var(--text-primary);
+        }
+
+        .btn:hover {
+            background: var(--border-hover);
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-primary {
+            background: var(--text-primary);
+            color: var(--bg-app);
+        }
+
+        .btn-primary:hover {
+            opacity: 0.9;
+            background: var(--text-primary);
+            transform: translateY(-1px);
+        }
+
+        .btn-danger {
+            color: var(--danger);
+            background: var(--danger-bg);
+            border-color: transparent;
+        }
+
+        .btn-danger:hover {
+            background: rgba(239, 68, 68, 0.2);
+        }
+
+        .btn-icon {
+            padding: 8px;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+        }
+
+        /* --- Comments --- */
+        .comment-thread {
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .reply-block {
+            margin-top: 1rem;
+            padding-left: 1rem;
+            border-left: 2px solid var(--border);
+        }
+
+        /* --- Login Overlay --- */
+        .login-overlay {
+            position: fixed;
+            inset: 0;
+            background: var(--bg-app);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-box {
+            width: 100%;
+            max-width: 400px;
+            padding: 2.5rem;
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        /* --- Skeleton Loading --- */
+        .skeleton {
+            background: linear-gradient(90deg, var(--bg-element) 25%, var(--border) 50%, var(--bg-element) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+            border-radius: 4px;
+            height: 20px;
+            margin-bottom: 8px;
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: 200% 0;
+            }
+
+            100% {
+                background-position: -200% 0;
+            }
+        }
+
+        /* --- Toast --- */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: var(--text-primary);
+            color: var(--bg-app);
+            padding: 12px 24px;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.4s var(--ease-spring);
+            z-index: 200;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        /* --- Mobile Responsive --- */
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+
+            .mobile-header {
+                display: flex;
+            }
+
+            aside {
+                position: fixed;
+                top: var(--header-mobile);
+                left: 0;
+                bottom: 0;
+                width: 100%;
+                transform: translateX(-100%);
+                background: rgba(9, 9, 11, 0.95);
+                backdrop-filter: blur(16px);
+            }
+
+            aside.open {
+                transform: translateX(0);
+            }
+
+            main {
+                margin-top: var(--header-mobile);
+                padding: 1.5rem 1.25rem;
+            }
+
+            .input-title {
+                font-size: 1.75rem;
+            }
+
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+
+            /* Better touch targets */
+            .btn {
+                min-height: 44px;
+            }
+
+            .nav-btn {
+                padding: 1rem;
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="loginScreen" class="login-overlay">
+        <form class="login-box" onsubmit="handleLogin(event)">
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <span class="brand" style="margin:0; font-size: 2rem;">Unfiltered<span>.</span></span>
+                <p style="color:var(--text-secondary); margin-top:0.5rem;">Admin Access</p>
+            </div>
+            <div style="margin-bottom: 1rem;">
+                <input id="email" class="std-input" type="email" autocomplete="username" placeholder="Email address"
+                    required>
+            </div>
+            <div style="margin-bottom: 1.5rem;">
+                <input id="password" class="std-input" type="password" autocomplete="current-password"
+                    placeholder="Password" required>
+            </div>
+            <button class="btn btn-primary" style="width:100%" type="submit">Enter Dashboard</button>
+        </form>
+    </div>
+
+    <div class="mobile-header">
+        <span class="brand" style="margin:0; font-size:1.25rem;">Unfiltered<span>.</span></span>
+        <button class="btn btn-icon" onclick="toggleSidebar()">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="3" y1="12" x2="21" y2="12"></line>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+        </button>
+    </div>
+
+    <aside id="sidebar" class="hidden-mobile">
+        <a href="index.html" class="brand mobile-hidden">Unfiltered<span>.</span></a>
+
+        <nav style="flex:1">
+            <button id="nav-posts" class="nav-btn active" onclick="switchTab('posts')" type="button">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                    <polyline points="10 9 9 9 8 9"></polyline>
+                </svg>
+                Posts
+            </button>
+            <button id="nav-comments" class="nav-btn" onclick="switchTab('comments')" type="button">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                </svg>
+                Discussion
+            </button>
+            <button id="nav-write" class="nav-btn" onclick="switchTab('write')" type="button">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                </svg>
+                Compose
+            </button>
+        </nav>
+
+        <div class="nav-divider"></div>
+        <button class="nav-btn" onclick="logout()" style="color:var(--danger)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                <polyline points="16 17 21 12 16 7"></polyline>
+                <line x1="21" y1="12" x2="9" y2="12"></line>
+            </svg>
+            Sign Out
+        </button>
+    </aside>
+
+    <main id="mainContent" style="display:none;">
+
+        <section id="tab-posts" class="tab-content">
+            <div class="editor-container">
+                <header class="section-header">
+                    <h1 class="section-title">Posts</h1>
+                    <span class="section-meta">MANAGE CONTENT</span>
+                </header>
+                <div id="postsList"></div>
+            </div>
+        </section>
+
+        <section id="tab-comments" class="hidden">
+            <div class="editor-container">
+                <header class="section-header">
+                    <h1 class="section-title">Comments</h1>
+                    <span class="section-meta">MODERATION QUEUE</span>
+                </header>
+                <div id="commentsList"></div>
+            </div>
+        </section>
+
+        <section id="tab-write" class="hidden">
+            <div class="editor-container">
+                <header class="section-header">
+                    <h1 class="section-title">Compose</h1>
+                    <span id="composeStatus" class="section-meta">NEW DRAFT</span>
+                </header>
+
+                <input id="editPostId" type="hidden">
+                <div style="margin-bottom: 2rem;">
+                    <input id="postTitle" class="input-title" type="text" placeholder="Enter title here..." required>
+
+
+
+                    <textarea id="postContent" class="input-content" placeholder="Start writing your thoughts..."
+                        required></textarea>
+
+                    <div class="flex justify-between items-center"
+                        style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--border);">
+                        <button class="btn" type="button" onclick="resetForm()">Clear</button>
+                        <button class="btn btn-primary" style="padding: 10px 32px;" type="button"
+                            onclick="submitPost()">Publish</button>
+                    </div>
+                </div>
+        </section>
+    </main>
+
+    <div id="toast" class="toast" role="status"></div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+    <script>
+        // --- Configuration & Init ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyAMn1F2BNZPygBW_a7nq_I5gG9Pmdf6SjU",
+            authDomain: "unfiltered-blog.firebaseapp.com",
+            projectId: "unfiltered-blog",
+            storageBucket: "unfiltered-blog.firebasestorage.app",
+            messagingSenderId: "347839653917",
+            appId: "1:347839653917:web:e89d406034a42a3a2bbef4"
+        };
+
+        let db, auth;
+        let allPostsCache = [];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            try {
+                firebase.initializeApp(firebaseConfig);
+                db = firebase.firestore();
+                auth = firebase.auth();
+
+                auth.onAuthStateChanged(user => {
+                    if (user) {
+                        document.getElementById('loginScreen').classList.add('hidden');
+                        document.getElementById('mainContent').style.display = 'block';
+                        loadPosts();
+                    } else {
+                        document.getElementById('loginScreen').classList.remove('hidden');
+                        document.getElementById('mainContent').style.display = 'none';
+                    }
+                });
+            } catch (e) { console.error(e); showToast('System Error'); }
+        });
+
+        // --- UI Interactions ---
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+        }
+
+        function switchTab(tab) {
+            // Close sidebar on mobile when navigating
+            document.getElementById('sidebar').classList.remove('open');
+
+            // Nav State
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(`nav-${tab}`).classList.add('active');
+
+            // Content State (Simple show/hide with fade logic implied by css transitions if added later)
+            document.querySelectorAll('#mainContent > section').forEach(c => c.classList.add('hidden'));
+            document.getElementById(`tab-${tab}`).classList.remove('hidden');
+
+            // Logic Triggers
+            if (tab === 'posts') loadPosts();
+            if (tab === 'comments') loadComments();
+            if (tab === 'write') {
+                if (!document.getElementById('editPostId').value) resetForm();
+            }
+        }
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 3000);
+        }
+
+        // --- Core Logic (Preserved) ---
+        async function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const pass = document.getElementById('password').value;
+            try {
+                await auth.signInWithEmailAndPassword(email, pass);
+            } catch (error) { showToast("Invalid Credentials"); }
+        }
+
+        function logout() { auth.signOut(); }
+
+        function resetForm() {
+            document.getElementById('editPostId').value = "";
+            document.getElementById('postTitle').value = "";
+            document.getElementById('postContent').value = "";
+
+            document.getElementById('composeStatus').textContent = "NEW DRAFT";
+        }
+
+        function editPost(id) {
+            const post = allPostsCache.find(p => p.id === id);
+            if (!post) return;
+
+            document.getElementById('editPostId').value = post.id;
+            document.getElementById('postTitle').value = post.title;
+
+            document.getElementById('postContent').value = post.content;
+            document.getElementById('composeStatus').textContent = "EDITING: " + post.title.toUpperCase();
+
+            switchTab('write');
+        }
+
+        async function submitPost() {
+            const title = document.getElementById('postTitle').value;
+
+            const content = document.getElementById('postContent').value;
+
+            if (!title || !content) { showToast("Title & Content required"); return; }
+
+            const id = document.getElementById('editPostId').value || Date.now().toString();
+            const isEdit = !!document.getElementById('editPostId').value;
+
+            try {
+                const data = { title, content, id };
+                if (!isEdit) {
+                    data.author = "Unfilterer";
+                    data.date = new Date().toISOString();
+                    data.commentsCount = 0;
+                }
+
+                await db.collection('admin_posts').doc(id).set(data, { merge: true });
+                showToast(isEdit ? "Changes Saved" : "Published Successfully");
+                resetForm();
+                if (isEdit) switchTab('posts');
+
+            } catch (err) { console.error(err); showToast("Error saving"); }
+        }
+
+        function countCommentsForPost(comments) {
+            if (!comments || !comments.length) return 0;
+            return comments.reduce((sum, c) => sum + 1 + (c.replies ? c.replies.length : 0), 0);
+        }
+
+        // --- Data Loading & Rendering (Optimized) ---
+        function renderSkeleton() {
+            return `
+                <div class="card">
+                    <div class="skeleton" style="width:60%"></div>
+                    <div class="skeleton" style="width:30%"></div>
+                </div>`.repeat(3);
+        }
+
+        async function loadPosts() {
+            const list = document.getElementById('postsList');
+            // Show skeleton loader
+            list.innerHTML = renderSkeleton();
+
+            try {
+                const snap = await db.collection('admin_posts').get();
+                allPostsCache = [];
+                snap.forEach(doc => {
+                    allPostsCache.push({ ...doc.data(), id: doc.id });
+                });
+                allPostsCache.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+                // Fetch comment counts concurrently
+                const countPromises = allPostsCache.map(p =>
+                    db.collection('posts').doc(`post_${p.id}_comments`).get()
+                );
+                const countSnaps = await Promise.all(countPromises);
+
+                allPostsCache.forEach((p, i) => {
+                    const doc = countSnaps[i];
+                    p.commentsCount = doc.exists && doc.data().comments
+                        ? countCommentsForPost(doc.data().comments)
+                        : 0;
+                });
+
+                if (allPostsCache.length === 0) {
+                    list.innerHTML = '<div style="text-align:center; color:var(--text-tertiary); padding:3rem;">No stories published yet.</div>';
+                    return;
+                }
+
+                list.innerHTML = allPostsCache.map(p => `
+                    <div class="card flex justify-between items-center">
+                        <div>
+                            <div class="card-title">${escapeHtml(p.title)}</div>
+                            <div class="card-meta">
+
+                                <span>${new Date(p.date).toLocaleDateString()}</span>
+                                <span>&bull;</span>
+                                <span>${p.commentsCount} comments</span>
+                            </div>
+                        </div>
+                        <div class="flex gap-2">
+                            <button class="btn" onclick="editPost('${escapeAttr(p.id)}')">Edit</button>
+                            <button class="btn btn-danger" onclick="deletePost('${escapeAttr(p.id)}')">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (err) { console.error(err); showToast("Failed to load posts"); }
+        }
+
+        async function deletePost(id) {
+            if (!confirm("Permanently delete this post?")) return;
+            try {
+                await Promise.all([
+                    db.collection('admin_posts').doc(id).delete(),
+                    db.collection('posts').doc(`post_${id}_comments`).delete()
+                ]);
+                showToast("Deleted");
+                loadPosts();
+            } catch (e) { showToast("Error deleting"); }
+        }
+
+        async function loadComments() {
+            const list = document.getElementById('commentsList');
+            list.innerHTML = renderSkeleton();
+
+            try {
+                const snap = await db.collection('posts').get();
+                let html = '';
+                let hasComments = false;
+
+                snap.forEach(doc => {
+                    const data = doc.data();
+                    if (data.comments && data.comments.length > 0) {
+                        hasComments = true;
+                        data.comments.forEach((c, index) => {
+                            let repliesHtml = '';
+                            if (c.replies && c.replies.length > 0) {
+                                repliesHtml = `<div class="reply-block">
+                                    ${c.replies.map((r, rIndex) => `
+                                        <div style="margin-top:12px; border-top:1px solid var(--border); padding-top:8px;">
+                                            <div class="flex justify-between items-center mb-2">
+                                                <div class="flex items-center gap-2">
+                                                    <div style="font-weight:600; font-size:0.9rem;">${escapeHtml(r.author)}</div>
+                                                    <div class="tag">REPLY</div>
+                                                </div>
+                                                <button class="btn btn-danger" style="padding:4px 8px; font-size:0.7rem;" onclick="deleteReply('${doc.id}', ${index}, ${rIndex})">Delete</button>
+                                            </div>
+                                            <div style="font-size:0.95rem; color:var(--text-secondary);">${escapeHtml(r.text)}</div>
+                                        </div>
+                                    `).join('')}
+                                </div>`;
+                            }
+
+                            html += `
+                            <div class="comment-thread">
+                                <div class="flex justify-between items-start mb-3">
+                                    <div>
+                                        <div style="font-weight:700; color:var(--text-primary); font-size:1.05rem;">${escapeHtml(c.author)}</div>
+                                        <div class="mono" style="font-size:0.8rem; color:var(--text-tertiary);">ID: ${data.postId}</div>
+                                    </div>
+                                    <button class="btn btn-danger" onclick="deleteMainComment('${doc.id}', ${index})">Delete Thread</button>
+                                </div>
+                                <div style="color:var(--text-secondary); line-height:1.6; margin-bottom:1rem;">${escapeHtml(c.text)}</div>
+                                ${repliesHtml}
+                            </div>`;
+                        });
+                    }
+                });
+
+                list.innerHTML = hasComments ? html : '<div style="text-align:center; color:var(--text-tertiary); padding:3rem;">No discussions found.</div>';
+
+            } catch (err) { console.error(err); }
+        }
+
+        async function deleteMainComment(docId, index) {
+            if (!confirm("Delete this thread?")) return;
+            updateCommentArray(docId, comments => {
+                comments.splice(index, 1);
+                return comments;
+            });
+        }
+
+        async function deleteReply(docId, commentIndex, replyIndex) {
+            if (!confirm("Delete this reply?")) return;
+            updateCommentArray(docId, comments => {
+                if (comments[commentIndex]?.replies) {
+                    comments[commentIndex].replies.splice(replyIndex, 1);
+                }
+                return comments;
+            });
+        }
+
+        async function updateCommentArray(docId, callback) {
+            try {
+                const ref = db.collection('posts').doc(docId);
+                const doc = await ref.get();
+                if (!doc.exists) return;
+
+                let comments = callback(doc.data().comments);
+                await ref.update({ comments });
+                showToast("Moderation Action Saved");
+                loadComments();
+            } catch (e) { console.error(e); showToast("Database Error"); }
+        }
+
+        function escapeHtml(text) { return text ? String(text).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;") : ""; }
+        function escapeAttr(text) { return text ? String(text).replace(/&/g, "&amp;").replace(/"/g, "&quot;") : ""; }
+    </script>
+</body>
+
+</html>

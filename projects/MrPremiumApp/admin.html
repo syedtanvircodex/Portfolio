@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin Panel - Mr.Premium App</title>
+  <meta name="description" content="Admin panel for Mr.Premium App. Restricted area — not indexed by search engines.">
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="icon" type="image/png" sizes="32x32" href="logo.png?v=4" />
+  <link rel="icon" type="image/png" sizes="16x16" href="logo.png?v=4" />
+  <link rel="shortcut icon" href="logo.png?v=4" />
+  <link rel="apple-touch-icon" href="logo.png?v=4" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="stylesheet" href="assets/css/styles.css" />
+</head>
+
+<body>
+  <header id="site-header"></header>
+
+  <section class="admin-hero">
+    <div>
+      <p class="eyebrow">Admin workspace</p>
+      <h1>Control Center</h1>
+      <p class="hero-meta">Live from Firestore - Last sync <span id="lastSync">--</span></p>
+    </div>
+    <div class="hero-tags">
+      <span class="pill success">Secure</span>
+      <span class="pill soft">Realtime</span>
+      <span class="pill accent">Live Updates</span>
+    </div>
+  </section>
+
+  <div class="stat-grid hidden" id="statGrid">
+    <article class="stat-card">
+      <div class="stat-head">
+        <span class="stat-label">Orders</span>
+        <span class="pill soft">Live</span>
+      </div>
+      <div class="stat-value" id="ordersTotal">0</div>
+      <p class="stat-meta" id="ordersInfoMini">Latest 100 orders</p>
+    </article>
+    <article class="stat-card">
+      <div class="stat-head">
+        <span class="stat-label">Completed</span>
+        <span class="pill success">Fulfilled</span>
+      </div>
+      <div class="stat-value" id="ordersComplete">0</div>
+      <p class="stat-meta" id="ordersCompletionRate">&mdash;</p>
+    </article>
+    <article class="stat-card">
+      <div class="stat-head">
+        <span class="stat-label">Revenue</span>
+        <span class="pill accent">&#2547;</span>
+      </div>
+      <div class="stat-value" id="ordersRevenue">&#2547;0</div>
+      <p class="stat-meta" id="averageTicket">Avg ticket --</p>
+    </article>
+    <article class="stat-card">
+      <div class="stat-head">
+        <span class="stat-label">Products</span>
+        <span class="pill neutral">Catalog</span>
+      </div>
+      <div class="stat-value" id="productsActive">0</div>
+      <p class="stat-meta" id="productsInfoMini">Active products</p>
+    </article>
+  </div>
+
+  <div class="admin-shell">
+    <section class="login-container admin-card" id="loginSection">
+      <div class="login-surface">
+        <div class="login-copy">
+          <p class="eyebrow">Restricted area</p>
+          <h2>Admin sign in</h2>
+          <p class="muted">Use your operator credentials to manage orders, payments, and catalog.</p>
+          <div class="login-points">
+            <span class="pill soft">Realtime sync</span>
+            <span class="pill success">Secure access</span>
+            <span class="pill accent">Full control</span>
+          </div>
+        </div>
+        <div class="login-form-card">
+          <div class="login-form">
+            <div class="field">
+              <label for="adminEmail">Email</label>
+              <input id="adminEmail" type="email" autocomplete="username" placeholder="admin@mrpremiumapp.page.gd" />
+            </div>
+            <div class="field">
+              <label for="adminPassword">Password</label>
+              <input id="adminPassword" type="password" autocomplete="current-password" placeholder="Enter password" />
+            </div>
+            <button class="btn" id="loginBtn">Sign in</button>
+            <p class="login-hint">Access is limited to authorized operators only.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="admin-layout hidden" id="adminNav">
+      <aside class="admin-sidebar">
+        <div class="sidebar-header">
+          <p class="eyebrow">Dashboard</p>
+          <h3>Navigation</h3>
+        </div>
+        <button id="ordersTab" class="active">Orders</button>
+        <button id="productsTab">Products</button>
+      </aside>
+
+      <main class="admin-content">
+        <!-- Orders Section -->
+        <section id="ordersSection" class="admin-card panel">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">Orders</p>
+              <h2>Orders &amp; payments</h2>
+              <p class="muted" id="ordersInfo">Showing latest orders</p>
+            </div>
+            <div class="panel-actions">
+              <button class="btn-ghost" id="refreshBtn">Refresh</button>
+            </div>
+          </div>
+
+          <div class="toolbar">
+            <div class="input-icon">
+              <input type="search" id="orderSearch" placeholder="Search order id, customer, email, WhatsApp"
+                autocomplete="off" />
+            </div>
+            <select id="orderStatusFilter">
+              <option value="all">All statuses</option>
+              <option value="complete">Complete</option>
+              <option value="incomplete">Pending</option>
+            </select>
+          </div>
+
+          <div class="table-wrapper">
+            <table class="table-modern">
+              <thead>
+                <tr>
+                  <th>Order ID</th>
+                  <th>Customer</th>
+                  <th class="hide-mobile">Email</th>
+                  <th class="hide-mobile">WhatsApp</th>
+                  <th class="hide-mobile">Trx ID (Last 3)</th>
+                  <th>Product</th>
+                  <th>Amount</th>
+                  <th class="hide-mobile">Created</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="ordersTbody">
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Products Section -->
+        <section id="productsSection" class="hidden">
+          <div class="admin-card panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">Catalog</p>
+                <h2>Product management</h2>
+                <p class="muted" id="productsInfo">Showing all products</p>
+              </div>
+              <div class="panel-actions">
+                <button class="btn-ghost" id="refreshProductsBtn">Refresh</button>
+                <button class="btn" id="addProductBtn">Add product</button>
+              </div>
+            </div>
+
+            <div class="toolbar">
+              <div class="input-icon">
+                <input type="search" id="productSearch" placeholder="Search by name or category"
+                  autocomplete="off" />
+              </div>
+              <select id="productStatusFilter">
+                <option value="all">All statuses</option>
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+              </select>
+              <select id="productTypeFilter">
+                <option value="all">All types</option>
+                <option value="offer">Offer &amp; Combo</option>
+                <option value="subscription">Subscription</option>
+                <option value="pc">For PC</option>
+                <option value="android">For Android</option>
+              </select>
+            </div>
+
+            <div class="table-wrapper">
+              <table class="table-modern">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th class="hide-mobile">Regular</th>
+                    <th>Discount</th>
+                    <th class="hide-mobile">Category</th>
+                    <th>Status</th>
+                    <th class="hide-mobile">Created</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="productsTbody">
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <!-- Product Modal -->
+  <div class="modal-overlay hidden" id="productModalOverlay">
+    <div class="modal-container">
+      <div class="admin-form" id="productFormSection">
+        <div class="form-head">
+          <h3 id="productFormTitle">Add Product</h3>
+        </div>
+        <div class="form-grid">
+          <div class="field full">
+            <label for="productName">Product Name</label>
+            <input id="productName" type="text" placeholder="e.g., Truecaller Premium" />
+          </div>
+          <div class="field full">
+            <label for="productDescription">Description</label>
+            <textarea id="productDescription" rows="3" style="resize: vertical;"></textarea>
+          </div>
+          <div class="field">
+            <label for="regularPrice">Regular Price (&#2547;)</label>
+            <input id="regularPrice" type="number" step="0.01" />
+          </div>
+          <div class="field">
+            <label for="discountPrice">Discount Price (&#2547;)</label>
+            <input id="discountPrice" type="number" step="0.01" />
+          </div>
+          <div class="field">
+            <label for="productType">Product Type</label>
+            <select id="productType">
+              <option value="offer">Offer &amp; Combo</option>
+              <option value="subscription">Subscription</option>
+              <option value="pc">For PC</option>
+              <option value="android">For Android</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="productCategory">Category</label>
+            <input id="productCategory" type="text" />
+          </div>
+          <div class="field full">
+            <label for="productImageUrl">Image URL</label>
+            <input id="productImageUrl" type="url" />
+          </div>
+          <div class="field">
+            <label for="productStatus">Status</label>
+            <select id="productStatus">
+              <option value="active">Active</option>
+              <option value="inactive">Inactive</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button class="btn" id="saveProductBtn">Save Product</button>
+          <button class="btn-ghost" id="cancelProductBtn">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer id="site-footer"></footer>
+
+  <script src="assets/js/components.js"></script>
+  <script src="assets/js/script.js" defer></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="assets/js/firebase-config.js"></script>
+  <script src="assets/js/admin.js"></script>
+</body>
+
+</html>

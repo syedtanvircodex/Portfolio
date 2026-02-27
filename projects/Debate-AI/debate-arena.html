@@ -1,0 +1,2355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Debate Arena</title>
+  <link rel="icon" type="image/png" href="debate-arena.png" />
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link 
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@400;500;600;700&display=swap" 
+    rel="stylesheet" 
+  />
+  
+  <style>
+    /* ─── DESIGN TOKENS ──────────────────────────────────────────────────── */
+    :root {
+      --bg:           #0F1113;
+      --surface:      #171A1E;
+      --surface-2:    #1E2227;
+      --surface-3:    #262C33;
+
+      --border:       rgba(219,227,235,0.12);
+      --border-warm:  rgba(149,176,196,0.28);
+
+      --ink:          #EEF2F5;
+      --ink-2:        #C3CCD3;
+      --ink-3:        #7D8A95;
+
+      --gold:         #94AFC3;
+      --gold-light:   #BFD0DD;
+      --gold-dim:     rgba(149,176,196,0.12);
+      --gold-glow:    rgba(149,176,196,0.20);
+      --gold-focus:   rgba(149,176,196,0.55);
+
+      --emerald:      #2A7A55;
+      --crimson:      #B83030;
+      --sapphire:     #3D70A8;
+
+      --r-xs:   4px;
+      --r-sm:   7px;
+      --r-md:   11px;
+      --r-lg:   16px;
+      --r-xl:   22px;
+      --r-pill: 9999px;
+
+      --font-display: "Inter Tight", -apple-system, sans-serif;
+      --font-body:    "Inter", -apple-system, sans-serif;
+
+      --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
+      --ease-ios:  cubic-bezier(0.45, 0, 0.55, 1);
+
+      --shadow-float: 
+        0 0 0 1px rgba(219,227,235,0.06), 
+        0 28px 80px rgba(0,0,0,0.5), 
+        0 8px 24px rgba(0,0,0,0.35);
+    }
+
+    /* ─── RESET & BASE ──────────────────────────────────────────────────── */
+    *, 
+    *::before, 
+    *::after { 
+      box-sizing: border-box; 
+      margin: 0; 
+      padding: 0; 
+    }
+
+    html { 
+      height: 100%; 
+      width: 100%; 
+    }
+
+    body {
+      height: 100%;
+      width: 100%;
+      font-family: var(--font-body);
+      background: var(--bg);
+      color: var(--ink);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      overflow: hidden;
+      overflow-x: hidden;
+    }
+
+    /* Grain texture via SVG filter */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0.02;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+      background-size: 200px 200px;
+    }
+
+    /* ─── App Shell ───────────────────────────────────────────────────────── */
+    .app {
+      position: relative;
+      width: 100%;
+      height: 100dvh;
+      height: 100vh;
+      overflow: hidden;
+      background:
+        radial-gradient(ellipse 65% 48% at 8% -10%, rgba(149,176,196,0.07) 0%, transparent 62%),
+        radial-gradient(ellipse 55% 60% at 92% 108%, rgba(125,138,149,0.06) 0%, transparent 58%),
+        radial-gradient(ellipse 70% 50% at 50% 50%, rgba(15,17,19,0.82) 0%, var(--bg) 100%);
+    }
+
+    .app::after {
+      content: "";
+      position: absolute;
+      inset: -10% -8%;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at 18% 28%, rgba(149,176,196,0.08) 0%, transparent 38%),
+        radial-gradient(circle at 80% 72%, rgba(191,208,221,0.06) 0%, transparent 42%);
+      animation: ambientShift 18s ease-in-out infinite alternate;
+      z-index: 0;
+    }
+
+    /* ─── Screen System ───────────────────────────────────────────────────── */
+    .screen {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.35s var(--ease-expo);
+      z-index: 1;
+      overflow-x: hidden;
+    }
+    .screen.active { opacity: 1; pointer-events: all; }
+
+    .screen.active .intro-card,
+    .screen.active .debate-panel,
+    .screen.active .analysis-container {
+      animation: screenRise 0.6s var(--ease-expo) both;
+    }
+
+    /* ─────────────────────────────────────────────────────────────────────── */
+    /* INTRO SCREEN                                                            */
+    /* ─────────────────────────────────────────────────────────────────────── */
+    #introScreen {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      overflow-y: auto;
+      overflow-x: hidden;
+      box-sizing: border-box;
+    }
+
+    .intro-card {
+      position: relative;
+      width: min(44rem, 100%);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r-xl);
+      padding: clamp(2rem, 1.5rem + 2.5vw, 2.75rem);
+      box-shadow: var(--shadow-float);
+      overflow: hidden;
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+    }
+
+    /* Gold top line */
+    .intro-card::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent 6%, var(--gold) 38%, var(--gold-light) 50%, var(--gold) 62%, transparent 94%);
+      opacity: 0.48;
+    }
+
+    /* Subtle inner glow */
+    .intro-card::after {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 180px;
+      background: radial-gradient(ellipse 80% 100% at 50% 0%, rgba(149,176,196,0.06) 0%, transparent 100%);
+      pointer-events: none;
+    }
+
+    /* ── Eyebrow ── */
+    .eyebrow-row {
+      display: flex;
+      align-items: center;
+      gap: 0.9rem;
+      margin-bottom: 1.8rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .eyebrow-line {
+      height: 1px;
+      flex: 1;
+      background: linear-gradient(90deg, var(--gold), transparent);
+      opacity: 0.35;
+    }
+
+    .eyebrow-line.right {
+      background: linear-gradient(270deg, var(--gold), transparent);
+    }
+
+    .eyebrow-label {
+      font-family: var(--font-body);
+      font-size: 0.68rem;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--gold);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .pulse-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--gold);
+      animation: pulse 2.5s ease-in-out infinite;
+      flex-shrink: 0;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); box-shadow: 0 0 0 0 rgba(149,176,196,0.4); }
+      50% { opacity: 0.7; transform: scale(0.85); box-shadow: 0 0 0 4px rgba(149,176,196,0); }
+    }
+
+    /* ── Headline ── */
+    .intro-headline {
+      font-family: var(--font-display);
+      font-size: clamp(2.6rem, 2rem + 2.8vw, 3.2rem);
+      font-weight: 700;
+      line-height: 1.02;
+      letter-spacing: -0.01em;
+      color: var(--ink);
+      margin-bottom: 1rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .intro-headline em {
+      color: var(--gold-light);
+      display: block;
+    }
+
+    .intro-sub {
+      font-size: clamp(0.9rem, 0.82rem + 0.32vw, 0.95rem);
+      color: var(--ink-2);
+      line-height: 1.65;
+      margin-bottom: clamp(1.8rem, 1.2rem + 1.5vw, 2.4rem);
+      max-width: 52ch;
+      font-weight: 400;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── Form ── */
+    .form-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .field { display: flex; flex-direction: column; gap: 0.55rem; }
+
+    .field-label {
+      font-size: 0.68rem;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+    }
+
+    .text-input {
+      width: 100%;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      color: var(--ink);
+      border-radius: var(--r-md);
+      padding: 0.85rem 1rem;
+      font-family: var(--font-body);
+      font-size: 0.95rem;
+      font-weight: 400;
+      outline: none;
+      transition: border-color 0.18s ease, box-shadow 0.18s ease;
+      appearance: none;
+    }
+
+    .text-input:focus {
+      border-color: var(--gold-focus);
+      box-shadow: 0 0 0 3px rgba(149,176,196,0.1), inset 0 1px 0 rgba(149,176,196,0.05);
+    }
+
+    .text-input::placeholder { color: var(--ink-3); }
+
+    /* ── Chips ── */
+    .chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-top: 0.3rem;
+    }
+
+    .chip {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--ink-3);
+      border-radius: var(--r-pill);
+      padding: 0.3rem 0.75rem;
+      font-family: var(--font-body);
+      font-size: 0.74rem;
+      font-weight: 400;
+      cursor: pointer;
+      transition: all 0.16s ease;
+      white-space: nowrap;
+      letter-spacing: 0.01em;
+    }
+
+    .chip:hover {
+      border-color: var(--border-warm);
+      color: var(--gold-light);
+      background: var(--gold-dim);
+    }
+
+    /* ── Stance Toggle ── */
+    .stance-toggle {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--r-md);
+      padding: 3px;
+      gap: 3px;
+    }
+
+    .stance-btn {
+      background: transparent;
+      border: none;
+      color: var(--ink-3);
+      border-radius: calc(var(--r-md) - 2px);
+      padding: 0.7rem 1rem;
+      font-family: var(--font-body);
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s var(--ease-expo);
+      position: relative;
+      letter-spacing: 0.01em;
+    }
+
+    .stance-btn:hover:not(.active) {
+      color: var(--ink-2);
+      background: rgba(255,255,255,0.04);
+    }
+
+    .stance-btn.active {
+      background: var(--surface-3);
+      color: var(--ink);
+      box-shadow: 0 1px 6px rgba(0,0,0,0.5), inset 0 0 0 1px rgba(255,255,255,0.06);
+    }
+
+    .stance-btn.active[data-stance="FOR"]::after {
+      content: "";
+      position: absolute;
+      bottom: 3px; left: 50%; transform: translateX(-50%);
+      width: 18px; height: 2px;
+      border-radius: 1px;
+      background: var(--gold);
+    }
+
+    .stance-btn.active[data-stance="AGAINST"]::after {
+      content: "";
+      position: absolute;
+      bottom: 3px; left: 50%; transform: translateX(-50%);
+      width: 18px; height: 2px;
+      border-radius: 1px;
+      background: var(--sapphire);
+    }
+
+    /* ── Buttons ── */
+    .btn-primary {
+      width: 100%;
+      background: var(--gold);
+      color: #0F141A;
+      border: none;
+      border-radius: var(--r-md);
+      padding: 0.92rem 1.5rem;
+      font-family: var(--font-body);
+      font-size: 0.92rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      cursor: pointer;
+      transition: filter 0.15s ease, transform 0.12s ease, box-shadow 0.15s ease;
+      box-shadow: 0 6px 22px rgba(149,176,196,0.26), 0 1px 3px rgba(0,0,0,0.3);
+      position: relative;
+      overflow: hidden;
+      margin-top: 0.15rem;
+    }
+
+    .btn-primary::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.14) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .btn-primary:hover { filter: brightness(1.06); box-shadow: 0 8px 30px rgba(149,176,196,0.34), 0 1px 3px rgba(0,0,0,0.3); transform: translateY(-1px); }
+    .btn-primary:active { transform: scale(0.98); }
+    .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; filter: none; }
+
+    .btn-secondary {
+      background: var(--surface-2);
+      color: var(--ink-2);
+      border: 1px solid var(--border);
+      border-radius: var(--r-md);
+      padding: 0.72rem 1.15rem;
+      font-family: var(--font-body);
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.16s ease, border-color 0.16s ease, color 0.16s ease, transform 0.12s ease, box-shadow 0.16s ease;
+      letter-spacing: 0.01em;
+    }
+
+    .btn-secondary:hover {
+      background: var(--surface-3);
+      border-color: rgba(219,227,235,0.22);
+      color: var(--ink);
+      box-shadow: inset 0 0 0 1px rgba(219,227,235,0.05);
+    }
+
+    .btn-secondary:active { transform: scale(0.98); }
+
+    /* ── Error ── */
+    .error-box {
+      display: none;
+      padding: 0.75rem 1rem;
+      border-radius: var(--r-md);
+      border: 1px solid rgba(184,48,48,0.3);
+      background: rgba(184,48,48,0.07);
+      color: #F4A0A0;
+      font-size: 0.85rem;
+      line-height: 1.5;
+    }
+    .error-box.show { display: block; }
+
+    :focus-visible {
+      outline: 2px solid var(--gold-focus);
+      outline-offset: 2px;
+    }
+
+    /* ─────────────────────────────────────────────────────────────────────── */
+    /* DEBATE SCREEN                                                           */
+    /* ─────────────────────────────────────────────────────────────────────── */
+    #debateScreen {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .debate-panel {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      width: 100%;
+      max-width: 860px;
+      margin: 0 auto;
+      overflow: hidden;
+      overflow-x: hidden;
+      box-sizing: border-box;
+    }
+
+    /* ── Header ── */
+    .debate-header {
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+      padding: 1rem clamp(1rem, 0.75rem + 1.2vw, 1.75rem);
+      border-bottom: 1px solid var(--border);
+      background: rgba(15,17,19,0.86);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      flex-shrink: 0;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .debate-header-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .debate-topic {
+      font-family: var(--font-display);
+      font-size: clamp(0.98rem, 0.85rem + 0.55vw, 1.08rem);
+      font-weight: 600;
+      color: var(--ink);
+      line-height: 1.3;
+      word-break: break-word;
+      flex: 1;
+    }
+
+    .round-tag {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.28rem 0.72rem;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--r-pill);
+      font-size: 0.66rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    /* ── Progress Pips ── */
+    .progress-track {
+      display: flex;
+      gap: 4px;
+      height: 2px;
+    }
+
+    .progress-pip {
+      flex: 1;
+      height: 100%;
+      border-radius: 2px;
+      background: rgba(219,227,235,0.12);
+      transition: background 0.4s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .progress-pip.done { background: rgba(149,176,196,0.52); }
+
+    .progress-pip.active {
+      background: rgba(149,176,196,0.18);
+    }
+
+    .progress-pip.active::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      width: 35%;
+      background: var(--gold);
+      border-radius: inherit;
+      animation: pipGlide 1.8s ease-in-out infinite alternate;
+    }
+
+    @keyframes pipGlide {
+      from { transform: translateX(0); }
+      to { transform: translateX(186%); }
+    }
+
+    @keyframes ambientShift {
+      from { transform: translate3d(0, 0, 0) scale(1); opacity: 0.75; }
+      to { transform: translate3d(0, -1.2%, 0) scale(1.03); opacity: 1; }
+    }
+
+    @keyframes screenRise {
+      from { opacity: 0; transform: translateY(12px) scale(0.99); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    /* ── Chat Area ── */
+    .chat-area {
+      flex: 1;
+      overflow-y: auto;
+      padding: clamp(1.2rem, 0.9rem + 1vw, 1.6rem);
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      overscroll-behavior-y: contain;
+      scroll-behavior: smooth;
+      min-height: 0;
+      scrollbar-width: thin;
+      scrollbar-color: var(--surface-3) transparent;
+    }
+
+    /* ── Messages ── */
+    .msg-row {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      animation: msgIn 0.35s var(--ease-expo) both;
+    }
+
+    @keyframes msgIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .msg-row.ai   { align-items: flex-start; }
+    .msg-row.user { align-items: flex-end; }
+
+    .msg-label {
+      font-size: 0.63rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 0 0.25rem;
+    }
+
+    .msg-row.ai   .msg-label { color: var(--ink-3); }
+    .msg-row.user .msg-label { color: rgba(149,176,196,0.72); }
+
+    .bubble {
+      max-width: min(68ch, 90%);
+      padding: 0.85rem 1rem;
+      line-height: 1.7;
+      font-size: clamp(0.9rem, 0.83rem + 0.28vw, 0.94rem);
+      white-space: pre-wrap;
+      overflow-wrap: break-word;
+      border-radius: var(--r-lg);
+      font-weight: 400;
+      transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+    }
+
+    .bubble:hover { transform: translateY(-1px); }
+
+    .msg-row.ai .bubble {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 2px solid rgba(149,176,196,0.3);
+      border-bottom-left-radius: 3px;
+      color: var(--ink);
+    }
+
+    .msg-row.user .bubble {
+      background: var(--surface-2);
+      border: 1px solid rgba(149,176,196,0.2);
+      border-right: 2px solid rgba(149,176,196,0.34);
+      border-bottom-right-radius: 3px;
+      background-image: linear-gradient(160deg, rgba(149,176,196,0.08), transparent 60%);
+      color: var(--ink);
+    }
+
+    /* ── Thinking Bar ── */
+    .thinking-bar {
+      display: none;
+      align-items: center;
+      gap: 0.65rem;
+      padding: 0 clamp(1.2rem, 0.9rem + 1vw, 1.6rem) 0.6rem;
+      color: var(--ink-3);
+      font-size: 0.8rem;
+      font-weight: 400;
+      flex-shrink: 0;
+      letter-spacing: 0.01em;
+    }
+    .thinking-bar.show { display: flex; }
+
+    .dots {
+      display: inline-flex;
+      gap: 3px;
+    }
+    .dots span {
+      width: 4px; height: 4px;
+      border-radius: 50%;
+      background: var(--gold);
+      animation: dotPulse 1.5s ease-in-out infinite both;
+      opacity: 0.5;
+    }
+    .dots span:nth-child(2) { animation-delay: 0.18s; }
+    .dots span:nth-child(3) { animation-delay: 0.36s; }
+
+    @keyframes dotPulse {
+      0%, 80%, 100% { transform: scale(0.5); opacity: 0.3; }
+      40%           { transform: scale(1);   opacity: 1; }
+    }
+
+    /* ── Complete Banner ── */
+    .complete-banner {
+      margin: 0 clamp(1.2rem, 0.9rem + 1vw, 1.6rem) 0.8rem;
+      padding: 1.1rem 1.3rem;
+      background: rgba(149,176,196,0.08);
+      border: 1px solid var(--border-warm);
+      border-radius: var(--r-lg);
+      flex-shrink: 0;
+    }
+
+    .complete-banner-head {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .complete-icon {
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      background: var(--gold-dim);
+      border: 1px solid var(--border-warm);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .complete-title {
+      font-family: var(--font-display);
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--ink);
+      letter-spacing: 0.01em;
+    }
+
+    .complete-sub {
+      font-size: 0.83rem;
+      color: var(--ink-3);
+      line-height: 1.5;
+      margin-bottom: 1rem;
+    }
+
+    .complete-actions {
+      display: flex;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+    }
+
+    .complete-actions .btn-secondary,
+    .complete-actions .btn-primary {
+      flex: 1;
+      min-width: 9rem;
+      width: auto;
+      padding: 0.62rem 0.9rem;
+      font-size: 0.84rem;
+    }
+
+    /* ── Inline debate error ── */
+    .debate-error-wrap {
+      padding: 0 clamp(1.2rem, 0.9rem + 1vw, 1.6rem) 0.4rem;
+      flex-shrink: 0;
+    }
+
+    /* ── Input Area ── */
+    .input-area {
+      border-top: 1px solid var(--border);
+      background: rgba(15,17,19,0.86);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      flex-shrink: 0;
+    }
+
+    .input-row {
+      display: flex;
+      align-items: flex-end;
+      gap: 0.65rem;
+      padding: 0.85rem clamp(1rem, 0.75rem + 1vw, 1.5rem);
+      padding-bottom: max(0.85rem, env(safe-area-inset-bottom, 0.85rem));
+    }
+
+    .msg-textarea {
+      flex: 1;
+      min-width: 0;
+      resize: none;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      color: var(--ink);
+      border-radius: var(--r-md);
+      padding: 0.78rem 0.95rem;
+      font-family: var(--font-body);
+      font-size: 0.93rem;
+      font-weight: 400;
+      line-height: 1.6;
+      outline: none;
+      min-height: 2.9rem;
+      max-height: 10rem;
+      overflow-y: auto;
+      scrollbar-width: none;
+      transition: border-color 0.16s ease, box-shadow 0.16s ease;
+    }
+
+    .msg-textarea:focus {
+      border-color: var(--gold-focus);
+      box-shadow: 0 0 0 3px rgba(149,176,196,0.1);
+    }
+
+    .msg-textarea::placeholder { color: var(--ink-3); }
+    .msg-textarea:disabled { opacity: 0.35; cursor: not-allowed; }
+
+    .send-btn {
+      flex-shrink: 0;
+      background: var(--gold);
+      color: #0F141A;
+      border: none;
+      border-radius: var(--r-md);
+      width: 2.9rem;
+      height: 2.9rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: filter 0.14s ease, transform 0.12s ease, box-shadow 0.14s ease;
+      box-shadow: 0 3px 14px rgba(149,176,196,0.24);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .send-btn::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.18) 0%, transparent 60%);
+    }
+
+    .send-btn:hover:not(:disabled) {
+      filter: brightness(1.1);
+      box-shadow: 0 6px 22px rgba(149,176,196,0.3);
+    }
+
+    .send-btn:active:not(:disabled) { transform: scale(0.94); }
+    .send-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+    .input-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 clamp(1rem, 0.75rem + 1vw, 1.5rem) 0.55rem;
+    }
+
+    .hint-text {
+      font-size: 0.66rem;
+      color: var(--ink-3);
+      letter-spacing: 0.03em;
+    }
+
+    .word-count {
+      font-size: 0.66rem;
+      color: var(--ink-3);
+      opacity: 0;
+      transition: opacity 0.15s ease;
+      letter-spacing: 0.02em;
+    }
+    .word-count.visible { opacity: 1; }
+
+    /* ─────────────────────────────────────────────────────────────────────── */
+    /* ANALYSIS SCREEN                                                         */
+    /* ─────────────────────────────────────────────────────────────────────── */
+    #analysisScreen {
+      overflow-y: auto;
+      overflow-x: hidden;
+      scrollbar-width: thin;
+      scrollbar-color: var(--surface-3) transparent;
+      box-sizing: border-box;
+    }
+
+    .analysis-container {
+      width: min(58rem, 100%);
+      margin: 0 auto;
+      padding: clamp(1.5rem, 1rem + 2vw, 2.2rem);
+      box-sizing: border-box;
+      overflow-x: hidden;
+    }
+
+    /* ── Analysis Header ── */
+    .analysis-header {
+      margin-bottom: clamp(1.75rem, 1.2rem + 2.2vw, 2.4rem);
+      padding-bottom: 1.6rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .analysis-kicker {
+      font-size: 0.66rem;
+      font-weight: 500;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 0.7rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .analysis-kicker::after {
+      content: "";
+      flex: 1;
+      max-width: 3rem;
+      height: 1px;
+      background: var(--gold);
+      opacity: 0.35;
+    }
+
+    .analysis-title {
+      font-family: var(--font-display);
+      font-size: clamp(2.2rem, 1.6rem + 2.4vw, 2.6rem);
+      font-weight: 700;
+      line-height: 1.04;
+      color: var(--ink);
+      margin-bottom: 0.5rem;
+    }
+
+    .analysis-lead {
+      color: var(--ink-3);
+      font-size: 0.9rem;
+      line-height: 1.5;
+      margin-top: 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+    }
+
+    /* ── Section Cards ── */
+    .analysis-section {
+      margin-bottom: 1.75rem;
+    }
+
+    .section-eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+      margin-bottom: 0.8rem;
+    }
+
+    .section-icon {
+      width: 24px; height: 24px;
+      border-radius: 7px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .si-summary  { background: rgba(255,255,255,0.04); border: 1px solid rgba(219,227,235,0.14); }
+    .si-strength { background: rgba(42,122,85,0.12);   border: 1px solid rgba(42,122,85,0.2); }
+    .si-weakness { background: rgba(184,48,48,0.10);   border: 1px solid rgba(184,48,48,0.18); }
+    .si-fallacy  { background: rgba(149,176,196,0.1); border: 1px solid rgba(149,176,196,0.2); }
+    .si-improve  { background: rgba(61,112,168,0.10);  border: 1px solid rgba(61,112,168,0.18); }
+    .si-verdict  { background: rgba(149,176,196,0.12); border: 1px solid rgba(149,176,196,0.22); }
+
+    .section-label {
+      font-size: 0.67rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+    }
+
+    .section-text {
+      color: var(--ink);
+      line-height: 1.75;
+      font-size: 0.93rem;
+      font-weight: 400;
+    }
+
+    .analysis-divider {
+      height: 1px;
+      background: var(--border);
+      margin: 1.75rem 0;
+    }
+
+    /* ── List Items ── */
+    .item-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+      list-style: none;
+    }
+
+    .item-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.65rem;
+      padding: 0.65rem 0.9rem;
+      border-radius: var(--r-md);
+      font-size: 0.9rem;
+      line-height: 1.6;
+      color: var(--ink);
+      font-weight: 400;
+    }
+
+    .item-list.strengths  li { background: rgba(42,122,85,0.06);    border: 1px solid rgba(42,122,85,0.14); }
+    .item-list.weaknesses li { background: rgba(184,48,48,0.05);    border: 1px solid rgba(184,48,48,0.13); }
+    .item-list.fallacies  li { background: rgba(149,176,196,0.08);  border: 1px solid rgba(149,176,196,0.16); }
+    .item-list.improve    li { background: rgba(61,112,168,0.05);   border: 1px solid rgba(61,112,168,0.12); }
+
+    .item-dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      margin-top: 0.55rem;
+    }
+
+    .strengths  .item-dot { background: var(--emerald); }
+    .weaknesses .item-dot { background: var(--crimson); }
+    .fallacies  .item-dot { background: var(--gold); }
+    .improve    .item-dot { background: var(--sapphire); }
+
+    /* ── Score Hero ── */
+    .score-hero {
+      display: flex;
+      align-items: center;
+      gap: 1.6rem;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--r-lg);
+      padding: 1.4rem 1.6rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .score-hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 60% 80% at 0% 50%, rgba(149,176,196,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .score-ring {
+      position: relative;
+      width: 82px; height: 82px;
+      flex-shrink: 0;
+    }
+
+    .score-ring svg { transform: rotate(-90deg); }
+    .score-ring-track { fill: none; stroke: rgba(219,227,235,0.16); stroke-width: 4; }
+    .score-ring-fill {
+      fill: none;
+      stroke-width: 4;
+      stroke-linecap: round;
+      stroke-dasharray: 220;
+      stroke-dashoffset: 220;
+      transition: stroke-dashoffset 1.5s var(--ease-expo), stroke 0.3s ease;
+    }
+
+    .score-number {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    .score-info { display: flex; flex-direction: column; gap: 0.3rem; }
+
+    .score-eyebrow {
+      font-size: 0.65rem;
+      font-weight: 500;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+    }
+
+    .score-big {
+      font-family: var(--font-display);
+      font-size: 2.1rem;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .score-big.high { color: var(--emerald); }
+    .score-big.mid  { color: var(--gold-light); }
+    .score-big.low  { color: var(--crimson); }
+    .score-big.none { color: var(--ink-3); }
+
+    .score-caption { font-size: 0.83rem; color: var(--ink-2); line-height: 1.5; }
+
+    /* ── Verdict ── */
+    .verdict-callout {
+      background: rgba(149,176,196,0.1);
+      border: 1px solid var(--border-warm);
+      border-left: 3px solid var(--gold);
+      border-radius: var(--r-lg);
+      padding: 1.1rem 1.25rem;
+      color: var(--ink);
+      line-height: 1.75;
+      font-size: 0.93rem;
+      font-family: var(--font-display);
+      font-size: 1.05rem;
+      letter-spacing: 0.01em;
+    }
+
+    /* ── Analysis Nav ── */
+    .analysis-nav {
+      display: flex;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+      position: sticky;
+      bottom: 0;
+      background: var(--bg);
+      padding-bottom: max(1.2rem, env(safe-area-inset-bottom, 1.2rem));
+      margin-top: 2rem;
+    }
+
+    .analysis-nav .btn-secondary { flex: 1; min-width: 11rem; text-align: center; }
+
+    /* ── Retry ── */
+    .retry-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: var(--gold-dim);
+      border: 1px solid var(--border-warm);
+      color: var(--gold-light);
+      border-radius: var(--r-sm);
+      padding: 0.45rem 0.85rem;
+      font-family: var(--font-body);
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      margin-top: 0.75rem;
+      transition: background 0.14s ease, border-color 0.14s ease;
+    }
+
+    .retry-btn:hover { background: rgba(149,176,196,0.16); border-color: rgba(149,176,196,0.4); }
+
+    /* ── Loading Dots ── */
+    .load-dots {
+      display: inline-flex;
+      gap: 3px;
+      vertical-align: middle;
+      margin-left: 4px;
+    }
+
+    .load-dots span {
+      width: 4px; height: 4px;
+      border-radius: 50%;
+      background: var(--ink-3);
+      animation: dotPulse 1.5s ease-in-out infinite both;
+    }
+
+    .load-dots span:nth-child(2) { animation-delay: 0.18s; }
+    .load-dots span:nth-child(3) { animation-delay: 0.36s; }
+
+    /* ─────────────────────────────────────────────────────────────────────── */
+    /* RESPONSIVE                                                              */
+    /* ─────────────────────────────────────────────────────────────────────── */
+    @media (max-width: 600px) {
+      body { overflow: hidden; }
+
+      .app { height: 100svh; height: 100dvh; }
+
+      #introScreen {
+        align-items: flex-start;
+        padding: 0;
+      }
+
+      .intro-card {
+        min-height: 100svh;
+        border-radius: 0;
+        border: none;
+        box-shadow: none;
+        overflow-y: auto;
+        width: 100%;
+        padding: 1.75rem 1.25rem 2.5rem;
+      }
+
+      .intro-card::before,
+      .intro-card::after { display: none; }
+
+      .bubble { max-width: 95%; }
+
+      .complete-actions .btn-secondary,
+      .complete-actions .btn-primary { min-width: 100%; }
+
+      .analysis-nav .btn-secondary { min-width: 100%; }
+
+      #analysisScreen .analysis-container { padding: 1.5rem 1.1rem; }
+
+      .score-hero { flex-direction: column; align-items: flex-start; gap: 1rem; }
+    }
+
+    @media (min-width: 1025px) {
+      .debate-panel {
+        padding: 0.75rem 0.75rem 0;
+        max-width: 900px;
+      }
+
+      .debate-header {
+        border-radius: var(--r-lg) var(--r-lg) 0 0;
+        border-left: 1px solid var(--border);
+        border-right: 1px solid var(--border);
+      }
+
+      .chat-area,
+      .thinking-bar,
+      .debate-error-wrap,
+      .complete-banner,
+      .input-area {
+        border-left: 1px solid var(--border);
+        border-right: 1px solid var(--border);
+      }
+
+      .input-area {
+        border-radius: 0 0 var(--r-lg) var(--r-lg);
+        border-bottom: 1px solid var(--border);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+      .app::after { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+
+    <!-- ──────────────────────────────────────────────────────────────────── -->
+    <!-- INTRO SCREEN                                                         -->
+    <!-- ──────────────────────────────────────────────────────────────────── -->
+    <section id="introScreen" class="screen active">
+      <div class="intro-card">
+
+        <div class="eyebrow-row">
+          <div class="eyebrow-line"></div>
+          <div class="eyebrow-label">
+            <span class="pulse-dot"></span>
+            Debate Arena
+          </div>
+          <div class="eyebrow-line right"></div>
+        </div>
+
+        <h1 class="intro-headline">
+          Make your case.<br />
+          The AI fights back.
+        </h1>
+
+        <p class="intro-sub">
+          Choose a topic, pick your stance, and go six rounds against an AI opponent 
+          designed to challenge every argument you make.
+        </p>
+
+        <div class="form-stack">
+          
+          <!-- Debate Topic Input -->
+          <div class="field">
+            <label class="field-label" for="topicInput">Debate Topic</label>
+            <input
+              id="topicInput"
+              class="text-input"
+              type="text"
+              maxlength="220"
+              placeholder="e.g. Social media should be regulated as public utilities"
+              autocomplete="off"
+              autocorrect="off"
+              spellcheck="false"
+            />
+            <div class="chip-row">
+              <button 
+                type="button" 
+                class="chip" 
+                data-topic="Universal basic income would do more harm than good"
+              >
+                Universal basic income
+              </button>
+              <button 
+                type="button" 
+                class="chip" 
+                data-topic="AI will eliminate more jobs than it creates"
+              >
+                AI &amp; jobs
+              </button>
+              <button 
+                type="button" 
+                class="chip" 
+                data-topic="Social media causes more harm than good to society"
+              >
+                Social media harms
+              </button>
+              <button 
+                type="button" 
+                class="chip" 
+                data-topic="Nuclear energy is the best solution to the climate crisis"
+              >
+                Nuclear energy
+              </button>
+              <button 
+                type="button" 
+                class="chip" 
+                data-topic="Voting should be mandatory for all eligible citizens"
+              >
+                Mandatory voting
+              </button>
+            </div>
+          </div>
+
+          <!-- Stance Toggle -->
+          <div class="field">
+            <label class="field-label">Your Stance</label>
+            <div class="stance-toggle">
+              <button 
+                id="forBtn" 
+                type="button" 
+                class="stance-btn active" 
+                data-stance="FOR"
+              >
+                Defending
+              </button>
+              <button 
+                id="againstBtn" 
+                type="button" 
+                class="stance-btn" 
+                data-stance="AGAINST"
+              >
+                Opposing
+              </button>
+            </div>
+          </div>
+
+          <!-- Start Button & Error -->
+          <button id="startBtn" class="btn-primary" type="button">Begin Debate</button>
+          <div id="introError" class="error-box" role="alert" aria-live="assertive"></div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ──────────────────────────────────────────────────────────────────── -->
+    <!-- DEBATE SCREEN                                                        -->
+    <!-- ──────────────────────────────────────────────────────────────────── -->
+    <section id="debateScreen" class="screen">
+      <div class="debate-panel">
+
+        <!-- Header with Topic & Progress -->
+        <header class="debate-header">
+          <div class="debate-header-top">
+            <div id="debateTitle" class="debate-topic"></div>
+            <div id="roundCounter" class="round-tag">Round 1 / 6</div>
+          </div>
+          <div id="roundsProgress" class="progress-track">
+            <div class="progress-pip active"></div>
+            <div class="progress-pip"></div>
+            <div class="progress-pip"></div>
+            <div class="progress-pip"></div>
+            <div class="progress-pip"></div>
+            <div class="progress-pip"></div>
+          </div>
+        </header>
+
+        <!-- Chat Area -->
+        <main id="chatArea" class="chat-area"></main>
+
+        <!-- Thinking Indicator -->
+        <div 
+          id="thinkingIndicator" 
+          class="thinking-bar" 
+          aria-live="polite" 
+          aria-label="AI is thinking"
+        >
+          <span class="dots">
+            <span></span>
+            <span></span>
+            <span></span>
+          </span>
+          Formulating rebuttal…
+        </div>
+
+        <!-- Debate Error -->
+        <div class="debate-error-wrap">
+          <div 
+            id="debateError" 
+            class="error-box" 
+            role="alert" 
+            aria-live="assertive"
+          ></div>
+        </div>
+
+        <!-- Debate Complete Panel -->
+        <div id="debateCompletePanel" class="complete-banner" hidden>
+          <div class="complete-banner-head">
+            <div class="complete-icon">
+              <svg 
+                width="10" 
+                height="10" 
+                viewBox="0 0 24 24" 
+                fill="none" 
+                stroke="#94AFC3" 
+                stroke-width="2.5" 
+                stroke-linecap="round" 
+                stroke-linejoin="round"
+              >
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+            </div>
+            <span class="complete-title">All 6 rounds concluded</span>
+          </div>
+          <p class="complete-sub">
+            The debate has ended. Request an AI-generated evaluation or start a new session.
+          </p>
+          <div class="complete-actions">
+            <button id="openEvaluationBtn" class="btn-secondary" type="button">
+              View Evaluation
+            </button>
+            <button id="newDebateFromDebateBtn" class="btn-primary" type="button">
+              New Debate
+            </button>
+          </div>
+        </div>
+
+        <!-- Input Area -->
+        <div class="input-area">
+          <div class="input-row">
+            <textarea
+              id="userInput"
+              class="msg-textarea"
+              placeholder="State your argument…"
+              rows="1"
+              aria-label="Your argument"
+            ></textarea>
+            <button 
+              id="sendBtn" 
+              class="send-btn" 
+              type="button" 
+              aria-label="Send argument"
+            >
+              <img 
+                src="send.png" 
+                alt="Send" 
+                width="17" 
+                height="17"
+                style="position:relative;z-index:1"
+              />
+            </button>
+          </div>
+          <div class="input-meta">
+            <span class="hint-text">Enter to send · Shift+Enter for newline</span>
+            <span id="wordCounter" class="word-count"></span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ──────────────────────────────────────────────────────────────────── -->
+    <!-- ANALYSIS SCREEN                                                      -->
+    <!-- ──────────────────────────────────────────────────────────────────── -->
+    <section id="analysisScreen" class="screen">
+      <div class="analysis-container">
+
+        <!-- Analysis Header -->
+        <div class="analysis-header">
+          <div class="analysis-kicker">Post-Debate Evaluation</div>
+          <h2 class="analysis-title">Performance Analysis</h2>
+          <div id="analysisLead" class="analysis-lead">Generating your evaluation…</div>
+        </div>
+
+        <!-- Analysis Content -->
+        <div id="analysisContent" hidden></div>
+
+        <!-- Analysis Navigation -->
+        <nav class="analysis-nav" aria-label="Analysis navigation">
+          <button id="backToHistoryBtn" class="btn-secondary" type="button">
+            Back to Debate
+          </button>
+          <button id="restartBtn" class="btn-secondary" type="button">
+            New Debate
+          </button>
+        </nav>
+
+      </div>
+    </section>
+
+  </div><!-- .app -->
+
+  <script>
+  (() => {
+    "use strict";
+
+    /* ──────────────────────────────────────────────────────────────────────── */
+    /* CONSTANTS                                                                */
+    /* ──────────────────────────────────────────────────────────────────────── */
+    const API_ENDPOINT     = "https://api.groq.com/openai/v1/chat/completions";
+    const MODEL_NAME       = "llama-3.3-70b-versatile";
+    const PERMANENT_API_KEY = "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";
+    const MAX_AI_ROUNDS    = 6;
+
+    /* ──────────────────────────────────────────────────────────────────────── */
+    /* SYSTEM PROMPTS                                                          */
+    /* ──────────────────────────────────────────────────────────────────────── */
+    const SYSTEM_PROMPT = `You are a highly skilled professional debater.
+
+You are sharp, logical, assertive, and intellectually challenging.
+You are NOT neutral — you actively try to defeat the user's argument.
+
+Rules:
+- Be persuasive and use logic + structured reasoning
+- Call out weak reasoning and identify logical gaps
+- Use rhetorical techniques; stay respectful but competitive
+- Never break character
+
+Debate Format Rules:
+- Keep responses 150–250 words
+- No bullet points during debate rounds
+- Write in strong argumentative paragraphs
+- Escalate sophistication slightly each round
+- Never output analysis headers such as "=== DEBATE ANALYSIS ==="`;
+
+    const ANALYSIS_SYSTEM_PROMPT = `You are a neutral debate judge.
+
+Evaluate the user's performance against the AI opponent.
+Do not roleplay as a debater. Use only the transcript provided.
+
+Return output using EXACTLY this format:
+
+=== DEBATE ANALYSIS ===
+
+SUMMARY:
+(Neutral summary of both sides)
+
+USER STRENGTHS:
+(List 3–5 strengths, one per line starting with -)
+
+USER WEAKNESSES:
+(List 3–5 weaknesses, one per line starting with -)
+
+LOGICAL FALLACIES:
+(Identify specific fallacies if present, or say "None clearly detected")
+
+IMPROVEMENT SUGGESTIONS:
+(List 3–5 actionable tips, one per line starting with -)
+
+PERSUASIVENESS SCORE:
+(0–100 integer only)
+
+VERDICT:
+(Short decisive conclusion paragraph)`;
+
+    /* ──────────────────────────────────────────────────────────────────────── */
+    /* DOM ELEMENT REFERENCES                                                  */
+    /* ──────────────────────────────────────────────────────────────────────── */
+    const $ = id => document.getElementById(id);
+    
+    const els = {
+      // Screens
+      introScreen:            $("introScreen"),
+      debateScreen:           $("debateScreen"),
+      analysisScreen:         $("analysisScreen"),
+
+      // Intro Screen Elements
+      topicInput:             $("topicInput"),
+      forBtn:                 $("forBtn"),
+      againstBtn:             $("againstBtn"),
+      startBtn:               $("startBtn"),
+      introError:             $("introError"),
+
+      // Debate Screen Elements
+      debateTitle:            $("debateTitle"),
+      roundCounter:           $("roundCounter"),
+      chatArea:               $("chatArea"),
+      thinkingIndicator:      $("thinkingIndicator"),
+      userInput:              $("userInput"),
+      sendBtn:                $("sendBtn"),
+      debateError:            $("debateError"),
+      debateCompletePanel:    $("debateCompletePanel"),
+      openEvaluationBtn:      $("openEvaluationBtn"),
+      newDebateFromDebateBtn: $("newDebateFromDebateBtn"),
+      wordCounter:            $("wordCounter"),
+
+      // Analysis Screen Elements
+      analysisLead:           $("analysisLead"),
+      analysisContent:        $("analysisContent"),
+      backToHistoryBtn:       $("backToHistoryBtn"),
+      restartBtn:             $("restartBtn"),
+    };
+
+    /* ──────────────────────────────────────────────────────────────────────── */
+    /* STATE MANAGEMENT                                                        */
+    /* ──────────────────────────────────────────────────────────────────────── */
+    const state = {
+      topic:                  "",
+      userStance:             "FOR",
+      aiStance:               "AGAINST",
+      aiMessagesCount:        0,
+      debateEnded:            false,
+      waitingForAI:           false,
+      conversationHistory:    [],
+      pendingAnalysisText:    "",
+      analysisLoading:        false,
+    };
+
+    let scrollRafId = null;
+
+    /* ──────────────────────────────────────────────────────────────────────── */
+    /* UTILITY FUNCTIONS                                                       */
+    /* ──────────────────────────────────────────────────────────────────────── */
+
+    /**
+     * Display or clear an error message in the given element
+     */
+    function setError(el, msg) {
+      el.textContent = msg || "";
+      el.classList.toggle("show", !!msg);
+    }
+
+    /**
+     * Show the specified screen and hide all others
+     */
+    function showScreen(el) {
+      [els.introScreen, els.debateScreen, els.analysisScreen]
+        .forEach(s => s.classList.remove("active"));
+      el.classList.add("active");
+    }
+
+    /**
+     * Queue smooth scroll to bottom of chat area using RAF
+     */
+    function queueScroll(behavior = "smooth") {
+      if (scrollRafId !== null) cancelAnimationFrame(scrollRafId);
+      scrollRafId = requestAnimationFrame(() => {
+        els.chatArea.scrollTo({ top: els.chatArea.scrollHeight, behavior });
+        scrollRafId = null;
+      });
+    }
+
+    /**
+     * Auto-resize textarea to fit content
+     */
+    function autoResize() {
+      const el = els.userInput;
+      el.style.height = "auto";
+      el.style.height = Math.min(el.scrollHeight, 160) + "px";
+    }
+
+    /* ──────────────────────────────────────────────────────────────────────── */
+    /* STANCE & PROGRESS MANAGEMENT                                            */
+    /* ──────────────────────────────────────────────────────────────────────── */
+
+    /**
+     * Set user stance and update button UI
+     */
+    function setStance(stance) {
+      state.userStance = stance;
+      state.aiStance   = stance === "FOR" ? "AGAINST" : "FOR";
+      els.forBtn.classList.toggle("active", stance === "FOR");
+      els.againstBtn.classList.toggle("active", stance === "AGAINST");
+    }
+
+    /**
+     * Update round counter and progress pips
+     */
+    function updateProgress() {
+      const displayRound = Math.min(state.aiMessagesCount + 1, MAX_AI_ROUNDS);
+      els.roundCounter.textContent = `Round ${displayRound} / ${MAX_AI_ROUNDS}`;
+
+      document.querySelectorAll(".progress-pip").forEach((pip, i) => {
+        pip.classList.remove("done", "active");
+        if (i < state.aiMessagesCount) {
+          pip.classList.add("done");
+        } else if (i === state.aiMessagesCount && state.aiMessagesCount < MAX_AI_ROUNDS) {
+          pip.classList.add("active");
+        }
+      });
+    }
+
+    /* ──────────────────────────────────────────────────────────────────────── */
+    /* MESSAGE HANDLING                                                        */
+    /* ──────────────────────────────────────────────────────────────────────── */
+
+    /**
+     * Add a message bubble to the chat area
+     */
+    function addMessage(role, text) {
+      const row = document.createElement("div");
+      row.className = `msg-row ${role}`;
+
+      const label = document.createElement("div");
+      label.className = "msg-label";
+      label.textContent = role === "ai" ? "AI Opponent" : "You";
+      row.appendChild(label);
+
+      const bubble = document.createElement("div");
+      bubble.className = "bubble";
+      bubble.textContent = text;
+      row.appendChild(bubble);
+
+      els.chatArea.appendChild(row);
+      queueScroll();
+    }
+
+    /**
+     * Set loading/waiting state for AI response
+     */
+    function setWaiting(on) {
+      state.waitingForAI        = on;
+      els.userInput.disabled    = on || state.debateEnded;
+      els.sendBtn.disabled      = on || state.debateEnded;
+      els.thinkingIndicator.classList.toggle("show", on);
+      if (on) queueScroll("auto");
+    }
+
+    /* ──────────────────────────────────────────────────────────────────────── */
+    /* API COMMUNICATION                                                       */
+    /* ──────────────────────────────────────────────────────────────────────── */
+
+    /**
+     * Fetch AI response from Groq API
+     */
+    async function fetchAI(
+      messages = state.conversationHistory, 
+      temperature = 0.9
+    ) {
+      const res = await fetch(API_ENDPOINT, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${PERMANENT_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: MODEL_NAME,
+          messages,
+          temperature,
+          max_tokens: 1024,
+        }),
+      });
+
+      if (!res.ok) {
+        const body = await res.text().catch(() => "");
+        throw new Error(`API error ${res.status}: ${body || "unknown error"}`);
+      }
+
+      const data    = await res.json();
+      const content = data?.choices?.[0]?.message?.content ?? "";
+      
+      if (!content || typeof content !== "string") {
+        throw new Error("Empty API response.");
+      }
+      
+      return content.trim();
+    }
+
+    /* ──────────────────────────────────────────────────────────────────────── */
+    /* CONVERSATION SETUP                                                      */
+    /* ──────────────────────────────────────────────────────────────────────── */
+
+    /**
+     * Initialize conversation history with system prompt and initial message
+     */
+    function initConversation() {
+      state.conversationHistory = [
+        { role: "system", content: SYSTEM_PROMPT },
+        {
+          role: "user",
+          content: `Debate topic: "${state.topic}". The user chose stance: ${state.userStance}. You must defend ${state.aiStance}. Begin Round 1 — provide only your first debate argument.`,
+        },
+      ];
+    }
+
+    /* ──────────────────────────────────────────────────────────────────────── */
+    /* DEBATE FLOW                                                             */
+    /* ──────────────────────────────────────────────────────────────────────── */
+
+    /**
+     * Execute AI turn: fetch response and add to chat
+     */
+    async function runAITurn() {
+      if (state.debateEnded) return;
+
+      setError(els.debateError, "");
+      setWaiting(true);
+
+      try {
+        const text = await fetchAI();
+        state.aiMessagesCount += 1;
+        state.conversationHistory.push({ role: "assistant", content: text });
+
+        addMessage("ai", text);
+        updateProgress();
+
+        if (state.aiMessagesCount >= MAX_AI_ROUNDS) {
+          endDebate();
+        } else {
+          setWaiting(false);
+          setTimeout(() => els.userInput.focus(), 80);
+        }
+      } catch (err) {
+        setError(
+          els.debateError, 
+          err instanceof Error ? err.message : "Unexpected error."
+        );
+        setWaiting(false);
+      }
+    }
+
+    /**
+     * Send user message and trigger AI response
+     */
+    function sendMessage() {
+      if (state.debateEnded || state.waitingForAI) return;
+      if (state.aiMessagesCount === 0 || state.aiMessagesCount >= MAX_AI_ROUNDS) return;
+
+      setError(els.debateError, "");
+      const text = els.userInput.value.trim();
+      
+      if (!text) {
+        setError(els.debateError, "Please enter your argument before sending.");
+        return;
+      }
+
+      addMessage("user", text);
+      state.conversationHistory.push({ role: "user", content: text });
+      els.userInput.value = "";
+      autoResize();
+      updateWordCount();
+      runAITurn();
+    }
+
+    /**
+     * End the debate and show completion panel
+     */
+    function endDebate() {
+      state.debateEnded = true;
+      setWaiting(false);
+
+      els.userInput.disabled = true;
+      els.sendBtn.disabled   = true;
+      els.userInput.value    = "";
+
+      state.pendingAnalysisText = "";
+      state.analysisLoading     = false;
+      els.analysisContent.innerHTML = "";
+      els.analysisContent.hidden = true;
+      els.analysisLead.innerHTML = "Generate the evaluation when you're ready.";
+
+      els.debateCompletePanel.hidden = false;
+      queueScroll("auto");
+    }
+
+    /**
+     * Start a new debate with validation
+     */
+    function startDebate() {
+      setError(els.introError, "");
+
+      const topic = els.topicInput.value.trim();
+      if (!topic) {
+        setError(els.introError, "Please enter a debate topic.");
+        return;
+      }
+
+      if (!PERMANENT_API_KEY || PERMANENT_API_KEY === "PASTE_YOUR_API_KEY_HERE") {
+        setError(
+          els.introError, 
+          "Set your API key in PERMANENT_API_KEY before starting."
+        );
+        return;
+      }
+
+      Object.assign(state, {
+        topic,
+        aiMessagesCount:     0,
+        debateEnded:         false,
+        waitingForAI:        false,
+        conversationHistory: [],
+        pendingAnalysisText: "",
+        analysisLoading:     false,
+      });
+
+      els.chatArea.innerHTML = "";
+      els.userInput.value    = "";
+      autoResize();
+      setError(els.debateError, "");
+      els.debateCompletePanel.hidden = true;
+      els.debateTitle.textContent    = topic;
+      updateProgress();
+      showScreen(els.debateScreen);
+      initConversation();
+      runAITurn();
+    }
+
+    /**
+     * Reset all state and return to intro screen
+     */
+    function resetAll() {
+      Object.assign(state, {
+        topic:                 "",
+        userStance:            "FOR",
+        aiStance:              "AGAINST",
+        aiMessagesCount:       0,
+        debateEnded:           false,
+        waitingForAI:          false,
+        conversationHistory:   [],
+        pendingAnalysisText:   "",
+        analysisLoading:       false,
+      });
+
+      els.topicInput.value           = "";
+      els.userInput.value            = "";
+      els.analysisContent.innerHTML  = "";
+      els.analysisContent.hidden     = true;
+      els.analysisLead.innerHTML     = "";
+      els.debateCompletePanel.hidden = true;
+      els.openEvaluationBtn.disabled = false;
+      autoResize();
+      updateWordCount();
+      setError(els.introError, "");
+      setError(els.debateError, "");
+      setStance("FOR");
+      showScreen(els.introScreen);
+    }
+
+    /* ──────────────────────────────────────────────────────────────────────── */
+    /* ANALYSIS & EVALUATION                                                   */
+    /* ──────────────────────────────────────────────────────────────────────── */
+
+    /**
+     * Build transcript from conversation history
+     */
+    function buildTranscript() {
+      return state.conversationHistory
+        .filter((m, i) => {
+          if (m.role === "system") return false;
+          if (i === 1 && m.role === "user" && m.content.startsWith("Debate topic:")) {
+            return false;
+          }
+          return true;
+        })
+        .map(m => `${m.role.toUpperCase()}: ${m.content}`)
+        .join("\n\n");
+    }
+
+    /**
+     * Check if text contains analysis header
+     */
+    function isAnalysis(text) {
+      return text.includes("=== DEBATE ANALYSIS ===");
+    }
+
+    /**
+     * Parse analysis text into structured data
+     */
+    function parseAnalysis(text) {
+      const cleaned = text.replace(/\r/g, "").trim();
+      const names = [
+        "SUMMARY",
+        "USER STRENGTHS",
+        "USER WEAKNESSES",
+        "LOGICAL FALLACIES",
+        "IMPROVEMENT SUGGESTIONS",
+        "PERSUASIVENESS SCORE",
+        "VERDICT",
+      ];
+      
+      const data = {};
+      
+      names.forEach((name, i) => {
+        const next = names[i + 1];
+        const pattern = next
+          ? new RegExp(`${name}:\\s*([\\s\\S]*?)\\n\\s*${next}:`, "i")
+          : new RegExp(`${name}:\\s*([\\s\\S]*)$`, "i");
+        const m = cleaned.match(pattern);
+        data[name] = m ? m[1].trim() : "";
+      });
+      
+      return data;
+    }
+
+    /**
+     * Parse list items from text
+     */
+    function parseList(text) {
+      return text
+        .split("\n")
+        .map(l => l.replace(/^[-*\d.)\s]+/, "").trim())
+        .filter(Boolean);
+    }
+
+    /**
+     * Render analysis content to DOM
+     */
+    function renderAnalysis(rawText) {
+      const S = parseAnalysis(rawText);
+      els.analysisContent.innerHTML = "";
+
+      const icons = {
+        summary: `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#5A5760" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`,
+        strength: `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#2A7A55" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`,
+        weakness: `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#B83030" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`,
+        fallacy: `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#94AFC3" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`,
+        improve: `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#3D70A8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>`,
+        verdict: `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#94AFC3" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`,
+      };
+
+      /**
+       * Create section header with icon
+       */
+      function makeHeader(label, icon, iconClass) {
+        const wrap = document.createElement("div");
+        wrap.className = "section-eyebrow";
+        
+        const ic = document.createElement("div");
+        ic.className = `section-icon ${iconClass}`;
+        ic.innerHTML = icons[icon];
+        wrap.appendChild(ic);
+        
+        const lb = document.createElement("span");
+        lb.className = "section-label";
+        lb.textContent = label;
+        wrap.appendChild(lb);
+        
+        return wrap;
+      }
+
+      /**
+       * Add text section
+       */
+      function addText(label, content, icon, iconClass) {
+        const sec = document.createElement("div");
+        sec.className = "analysis-section";
+        sec.appendChild(makeHeader(label, icon, iconClass));
+        
+        const p = document.createElement("p");
+        p.className = "section-text";
+        p.textContent = content || "Not provided.";
+        sec.appendChild(p);
+        
+        els.analysisContent.appendChild(sec);
+      }
+
+      /**
+       * Add list section
+       */
+      function addList(label, content, icon, iconClass, listClass) {
+        const sec = document.createElement("div");
+        sec.className = "analysis-section";
+        sec.appendChild(makeHeader(label, icon, iconClass));
+        
+        const items = parseList(content || "");
+        if (!items.length) {
+          const p = document.createElement("p");
+          p.className = "section-text";
+          p.textContent = "None provided.";
+          sec.appendChild(p);
+        } else {
+          const ul = document.createElement("ul");
+          ul.className = `item-list ${listClass}`;
+          items.forEach(item => {
+            const li = document.createElement("li");
+            const dot = document.createElement("span");
+            dot.className = "item-dot";
+            li.appendChild(dot);
+            li.appendChild(document.createTextNode(item));
+            ul.appendChild(li);
+          });
+          sec.appendChild(ul);
+        }
+        
+        els.analysisContent.appendChild(sec);
+      }
+
+      /**
+       * Add divider line
+       */
+      function addDivider() {
+        const d = document.createElement("div");
+        d.className = "analysis-divider";
+        els.analysisContent.appendChild(d);
+      }
+
+      // Render sections
+      addText("Summary", S["SUMMARY"], "summary", "si-summary");
+      addDivider();
+
+      addList("Your Strengths", S["USER STRENGTHS"], "strength", "si-strength", "strengths");
+      addList("Your Weaknesses", S["USER WEAKNESSES"], "weakness", "si-weakness", "weaknesses");
+
+      const fallItems = parseList(S["LOGICAL FALLACIES"] || "");
+      if (fallItems.length > 1) {
+        addList(
+          "Logical Fallacies",
+          S["LOGICAL FALLACIES"],
+          "fallacy",
+          "si-fallacy",
+          "fallacies"
+        );
+      } else {
+        addText(
+          "Logical Fallacies",
+          S["LOGICAL FALLACIES"] || "None clearly detected.",
+          "fallacy",
+          "si-fallacy"
+        );
+      }
+
+      addList(
+        "Improvement Suggestions",
+        S["IMPROVEMENT SUGGESTIONS"],
+        "improve",
+        "si-improve",
+        "improve"
+      );
+      addDivider();
+
+      // Render Score
+      const rawScore   = (S["PERSUASIVENESS SCORE"] || "").replace(/\D/g, "");
+      const scoreNum   = parseInt(rawScore, 10);
+      const valid      = !isNaN(scoreNum) && scoreNum >= 0 && scoreNum <= 100;
+      const scoreColor = valid
+        ? (scoreNum >= 70 ? "#2A7A55" : scoreNum >= 45 ? "#94AFC3" : "#B83030")
+        : "#5A5760";
+      const scoreClass = valid
+        ? (scoreNum >= 70 ? "high" : scoreNum >= 45 ? "mid" : "low")
+        : "none";
+      const scoreDesc  = valid
+        ? scoreNum >= 70
+          ? "Strong performance — your arguments were compelling and well-structured."
+          : scoreNum >= 45
+          ? "Solid effort — there is room to sharpen your reasoning and delivery."
+          : "Keep practicing — debate is a skill built through repetition and reflection."
+        : "Score could not be determined.";
+
+      const scoreSec = document.createElement("div");
+      scoreSec.className = "analysis-section";
+      scoreSec.appendChild(makeHeader("Persuasiveness Score", "verdict", "si-verdict"));
+      
+      const hero = document.createElement("div");
+      hero.className = "score-hero";
+      const circumference = 220;
+      hero.innerHTML = `
+        <div class="score-ring">
+          <svg width="82" height="82" viewBox="0 0 82 82">
+            <circle class="score-ring-track" cx="41" cy="41" r="35"/>
+            <circle class="score-ring-fill" cx="41" cy="41" r="35"
+              stroke="${scoreColor}"
+              style="stroke-dashoffset:${circumference}"/>
+          </svg>
+          <div class="score-number">${valid ? scoreNum : "?"}</div>
+        </div>
+        <div class="score-info">
+          <div class="score-eyebrow">Persuasiveness</div>
+          <div class="score-big ${scoreClass}">
+            ${valid ? scoreNum + '<span style="font-size:1rem;opacity:0.45">/100</span>' : "N/A"}
+          </div>
+          <div class="score-caption">${scoreDesc}</div>
+        </div>`;
+      
+      scoreSec.appendChild(hero);
+      els.analysisContent.appendChild(scoreSec);
+
+      if (valid) {
+        requestAnimationFrame(() => setTimeout(() => {
+          const fill = hero.querySelector(".score-ring-fill");
+          if (fill) {
+            fill.style.strokeDashoffset = circumference - (circumference * scoreNum / 100);
+          }
+        }, 100));
+      }
+
+      addDivider();
+
+      // Render Verdict
+      const verdictSec = document.createElement("div");
+      verdictSec.className = "analysis-section";
+      verdictSec.appendChild(makeHeader("Verdict", "verdict", "si-verdict"));
+      
+      const verdictBox = document.createElement("div");
+      verdictBox.className = "verdict-callout";
+      verdictBox.textContent = S["VERDICT"] || "No verdict provided.";
+      verdictSec.appendChild(verdictBox);
+      
+      els.analysisContent.appendChild(verdictSec);
+    }
+
+    /**
+     * Fallback analysis when evaluation fails
+     */
+    function fallbackAnalysis() {
+      return `=== DEBATE ANALYSIS ===
+SUMMARY:
+Analysis unavailable due to an evaluation error.
+USER STRENGTHS:
+- Not provided.
+USER WEAKNESSES:
+- Not provided.
+LOGICAL FALLACIES:
+None clearly detected.
+IMPROVEMENT SUGGESTIONS:
+- Retry the evaluation.
+PERSUASIVENESS SCORE:
+0
+VERDICT:
+Evaluation could not be completed.`;
+    }
+
+    /**
+     * Set analysis UI state (loading, error, success)
+     */
+    function setAnalysisUI(loading, text, showRetry = false) {
+      els.analysisLead.innerHTML = "";
+      
+      if (loading) {
+        els.analysisLead.innerHTML = `${text}<span class="load-dots"><span></span><span></span><span></span></span>`;
+      } else if (showRetry) {
+        const span = document.createElement("span");
+        span.textContent = text;
+        els.analysisLead.appendChild(span);
+        
+        const btn = document.createElement("button");
+        btn.className = "retry-btn";
+        btn.innerHTML = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 100 .49-.85"/></svg> Retry Evaluation`;
+        btn.addEventListener("click", () => {
+          state.pendingAnalysisText = "";
+          state.analysisLoading = false;
+          openEvaluation();
+        });
+        els.analysisLead.appendChild(btn);
+      } else {
+        els.analysisLead.textContent = text;
+      }
+      
+      els.analysisContent.hidden = true;
+      els.openEvaluationBtn.disabled = loading;
+    }
+
+    /**
+     * Display cached analysis without re-fetching
+     */
+    function revealAnalysis() {
+      if (!state.pendingAnalysisText) return;
+      renderAnalysis(state.pendingAnalysisText);
+      els.analysisContent.hidden = false;
+      els.analysisLead.innerHTML = "";
+    }
+
+    /**
+     * Fetch and display analysis evaluation
+     */
+    async function openEvaluation() {
+      showScreen(els.analysisScreen);
+
+      if (state.pendingAnalysisText) {
+        revealAnalysis();
+        return;
+      }
+      
+      if (state.analysisLoading) return;
+
+      state.analysisLoading = true;
+      setAnalysisUI(true, "Generating your evaluation…");
+
+      try {
+        const transcript = buildTranscript();
+        const text = await fetchAI(
+          [
+            { role: "system", content: ANALYSIS_SYSTEM_PROMPT },
+            {
+              role: "user",
+              content: `Topic: "${state.topic}"\nUser stance: ${state.userStance}\nAI stance: ${state.aiStance}\n\nTranscript:\n${transcript}`,
+            },
+          ],
+          0.4
+        );
+
+        state.pendingAnalysisText = isAnalysis(text) ? text : fallbackAnalysis();
+        revealAnalysis();
+      } catch (err) {
+        state.pendingAnalysisText = "";
+        state.analysisLoading = false;
+        const msg = err instanceof Error ? err.message : "Unknown error.";
+        setAnalysisUI(false, `Evaluation failed: ${msg}`, true);
+      } finally {
+        state.analysisLoading = false;
+        els.openEvaluationBtn.disabled = false;
+      }
+    }
+
+    /* ──────────────────────────────────────────────────────────────────────── */
+    /* UTILITY & FORMATTING                                                    */
+    /* ──────────────────────────────────────────────────────────────────────── */
+
+    /**
+     * Update and display word count in the input field
+     */
+    function updateWordCount() {
+      const text  = els.userInput.value.trim();
+      const words = text ? text.split(/\s+/).length : 0;
+      
+      if (words > 0) {
+        els.wordCounter.textContent = `${words} word${words !== 1 ? "s" : ""}`;
+        els.wordCounter.classList.add("visible");
+      } else {
+        els.wordCounter.textContent = "";
+        els.wordCounter.classList.remove("visible");
+      }
+    }
+
+    /* ──────────────────────────────────────────────────────────────────────── */
+    /* EVENT LISTENERS                                                         */
+    /* ──────────────────────────────────────────────────────────────────────── */
+
+    // Stance buttons
+    els.forBtn.addEventListener("click", () => setStance("FOR"));
+    els.againstBtn.addEventListener("click", () => setStance("AGAINST"));
+
+    // Start button
+    els.startBtn.addEventListener("click", startDebate);
+
+    // Send button
+    els.sendBtn.addEventListener("click", sendMessage);
+
+    // Evaluation button
+    els.openEvaluationBtn.addEventListener("click", openEvaluation);
+
+    // Navigation buttons
+    els.backToHistoryBtn.addEventListener("click", () => showScreen(els.debateScreen));
+    els.newDebateFromDebateBtn.addEventListener("click", resetAll);
+    els.restartBtn.addEventListener("click", resetAll);
+
+    // Textarea auto-resize and word count
+    els.userInput.addEventListener("input", () => {
+      autoResize();
+      updateWordCount();
+    });
+
+    // Enter key handling in textarea
+    els.userInput.addEventListener("keydown", e => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+      }
+    });
+
+    // Enter key handling in topic input
+    els.topicInput.addEventListener("keydown", e => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        startDebate();
+      }
+    });
+
+    // Chip click handlers
+    document.querySelectorAll(".chip").forEach(chip => {
+      chip.addEventListener("click", () => {
+        els.topicInput.value = chip.dataset.topic;
+        els.topicInput.focus();
+      });
+    });
+
+  })();
+  </script>
+</body>
+</html>
