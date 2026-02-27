@@ -188,7 +188,7 @@ Let's connect! Find me on:
 
 - **Email** — [syedtanvirislam20@gmail.com](mailto:syedtanvirislam20@gmail.com)
 - **GitHub** — [@syedtanvircodex](https://github.com/syedtanvircodex)
-- **Discord** — [Chat](https://discord.com/users/1392841948498493451)
+- **Discord** — [Dokja](https://discord.com/users/1392841948498493451)
 - **Live Portfolio** — [syedtanvir.netlify.app](https://syedtanvir.netlify.app/)
 
 ---
