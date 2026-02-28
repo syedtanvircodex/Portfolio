@@ -3,23 +3,23 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Geospatial Command Center</title>
+  <title>3D Map</title>
   
   <link href="https://cdn.jsdelivr.net/npm/maplibre-gl@4.0.0/dist/maplibre-gl.css" rel="stylesheet" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 
   <style>
     :root {
-      --bg-dark: #050b14;
-      --glass-bg: rgba(10, 15, 30, 0.65);
-      --glass-border: rgba(60, 130, 246, 0.2);
-      --accent: #00f0ff;
-      --accent-dim: rgba(0, 240, 255, 0.1);
+      --bg-dark: #0f1419;
+      --glass-bg: rgba(15, 20, 25, 0.9);
+      --glass-border: rgba(100, 116, 139, 0.3);
+      --accent: #3b82f6;
+      --accent-dim: rgba(59, 130, 246, 0.05);
       --text-main: #e2e8f0;
-      --text-muted: #64748b;
+      --text-muted: #94a3b8;
       --font-ui: 'Inter', sans-serif;
-      --font-code: 'JetBrains Mono', monospace;
     }
 
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -51,41 +51,17 @@
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
       border: 1px solid var(--glass-border);
-      border-radius: 4px; /* Techy sharp corners */
+      border-radius: 8px;
       padding: 16px;
       pointer-events: auto;
-      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
       position: relative;
     }
-    
-    /* Decoration lines */
-    .panel::before {
-      content: ''; position: absolute; top: -1px; left: -1px;
-      width: 10px; height: 10px; border-top: 2px solid var(--accent); border-left: 2px solid var(--accent);
-    }
-    .panel::after {
-      content: ''; position: absolute; bottom: -1px; right: -1px;
-      width: 10px; height: 10px; border-bottom: 2px solid var(--accent); border-right: 2px solid var(--accent);
-    }
-
-    /* Header */
-    .header { display: flex; justify-content: space-between; align-items: flex-start; }
-    .brand h1 { 
-      margin: 0; font-family: var(--font-code); font-size: 14px; 
-      letter-spacing: 0.15em; color: var(--accent); text-transform: uppercase;
-      text-shadow: 0 0 10px var(--accent-dim);
-    }
-    .brand span { font-size: 10px; color: var(--text-muted); display: block; margin-top: 4px; }
-
-    /* Stats Grid */
-    .stats { display: flex; gap: 24px; margin-top: 10px; }
-    .stat-item h3 { margin: 0 0 4px 0; font-size: 9px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
-    .stat-item p { margin: 0; font-family: var(--font-code); font-size: 14px; color: #fff; }
 
     /* Controls */
     .controls-container { align-self: flex-end; width: 300px; }
     .control-row { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
-    .control-label { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted); font-family: var(--font-code); }
+    .control-label { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted); font-family: var(--font-ui); }
     
     input[type=range] {
       -webkit-appearance: none; appearance: none; width: 100%; background: transparent;
@@ -95,23 +71,23 @@
     }
     input[type=range]::-webkit-slider-thumb {
       -webkit-appearance: none; height: 12px; width: 6px;
-      background: var(--accent); border-radius: 1px;
-      margin-top: -5px; box-shadow: 0 0 8px var(--accent); cursor: pointer;
+      background: var(--accent); border-radius: 2px;
+      margin-top: -5px; cursor: pointer;
     }
 
     /* Tooltip */
     #tooltip {
       position: absolute; pointer-events: none;
-      background: rgba(5, 10, 20, 0.9);
+      background: rgba(15, 20, 25, 0.95);
       border: 1px solid var(--glass-border);
-      padding: 12px; border-radius: 2px;
-      font-family: var(--font-code); font-size: 11px;
+      padding: 12px; border-radius: 6px;
+      font-family: var(--font-ui); font-size: 12px;
       opacity: 0; transform: translate(20px, 20px);
       transition: opacity 0.1s;
       z-index: 100;
       min-width: 150px;
     }
-    .tt-header { color: var(--accent); font-weight: bold; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 4px; margin-bottom: 6px; }
+    .tt-header { color: var(--accent); font-weight: 600; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 4px; margin-bottom: 6px; }
     .tt-row { display: flex; justify-content: space-between; margin-bottom: 2px; }
     .tt-key { color: var(--text-muted); }
     
@@ -123,24 +99,28 @@
     }
     .loader-content { text-align: center; }
     .loader-bar {
-      width: 200px; height: 2px; background: #1a2030; margin: 10px auto; position: relative; overflow: hidden;
+      width: 200px; height: 2px; background: #1e293b; margin: 10px auto; position: relative; overflow: hidden;
     }
     .loader-fill {
       position: absolute; top: 0; left: 0; height: 100%; width: 50%;
       background: var(--accent); animation: load 1.5s infinite ease-in-out;
-      box-shadow: 0 0 15px var(--accent);
     }
     @keyframes load { 0% { transform: translateX(-100%); } 100% { transform: translateX(250%); } }
 
     /* Focus Button */
     #focus-btn {
       margin-top: 10px; width: 100%; padding: 8px;
-      background: rgba(0, 240, 255, 0.1); border: 1px solid var(--accent);
-      color: var(--accent); font-family: var(--font-code); font-size: 11px;
-      cursor: pointer; text-transform: uppercase; letter-spacing: 1px;
+      background: transparent; border: 1px solid var(--accent);
+      color: var(--accent); font-family: var(--font-ui); font-size: 12px; font-weight: 500;
+      cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px;
       display: none; transition: background 0.2s;
     }
-    #focus-btn:hover { background: rgba(0, 240, 255, 0.2); }
+    #focus-btn:hover { background: rgba(59, 130, 246, 0.1); }
+
+    /* Hide MapLibre Attribution */
+    .maplibregl-ctrl-attrib { display: none; }
+    .maplibregl-ctrl-logo { display: none; }
+    .maplibregl-ctrl { display: none; }
 
   </style>
 </head>
@@ -148,7 +128,7 @@
 
   <div id="loader">
     <div class="loader-content">
-      <div style="font-family: var(--font-code); color: var(--accent); letter-spacing: 2px; font-size: 12px;">SYSTEM INITIALIZATION</div>
+      <div style="font-family: var(--font-ui); color: var(--text-main); letter-spacing: 1px; font-size: 13px; font-weight: 500;">Initializing Map</div>
       <div class="loader-bar"><div class="loader-fill"></div></div>
     </div>
   </div>
@@ -164,34 +144,10 @@
   </div>
 
   <div class="ui-layer">
-    <div class="panel header-panel">
-      <div class="header">
-        <div class="brand">
-          <h1>AERO-TRACKER</h1>
-          <span>Live Geospatial Feed // London Sector</span>
-        </div>
-        <div style="font-family: var(--font-code); font-size: 11px; color: var(--text-muted);" id="clock">00:00:00</div>
-      </div>
-      <div class="stats">
-        <div class="stat-item">
-          <h3>Active Units</h3>
-          <p id="ui-count">--</p>
-        </div>
-        <div class="stat-item">
-          <h3>Network</h3>
-          <p style="color: #10b981;">STABLE</p>
-        </div>
-        <div class="stat-item">
-          <h3>FPS</h3>
-          <p id="fps-counter">60</p>
-        </div>
-      </div>
-    </div>
-
     <div class="panel controls-container">
       <div class="control-row">
         <div class="control-label"><span>PITCH</span><span id="pitch-val">60°</span></div>
-        <input type="range" id="pitch-slider" min="0" max="80" value="60">
+        <input type="range" id="pitch-slider" min="0" max="60" value="60">
       </div>
       <div class="control-row">
         <div class="control-label"><span>BEARING</span><span id="bearing-val">0°</span></div>
@@ -246,8 +202,8 @@
         this.material = new THREE.LineBasicMaterial({
           color: color,
           transparent: true,
-          opacity: 0.6,
-          blending: THREE.AdditiveBlending
+          opacity: 0.5,
+          blending: THREE.NormalBlending
         });
 
         this.mesh = new THREE.Line(this.geometry, this.material);
@@ -307,16 +263,15 @@
         this.group.add(this.mesh);
 
         // 2. Glow Sprite (Fake Bloom)
-        const map = new THREE.TextureLoader().load('https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/sprites/glow.png');
         const spriteMat = new THREE.SpriteMaterial({ 
-          map: map, 
+          map: null,
           color: CONFIG.color, 
           transparent: true, 
-          blending: THREE.AdditiveBlending,
-          opacity: 0.8
+          blending: THREE.NormalBlending,
+          opacity: 0.6
         });
         this.glow = new THREE.Sprite(spriteMat);
-        this.glow.scale.set(30, 30, 1);
+        this.glow.scale.set(20, 20, 1);
         this.group.add(this.glow);
 
         // 3. Status Light (Geometry)
@@ -469,7 +424,6 @@
             for(let i=0; i<CONFIG.unitCount; i++) {
               this.drones.push(new Drone(i + 1000, this.scene, CONFIG.start));
             }
-            document.getElementById('ui-count').innerText = CONFIG.unitCount.toString().padStart(3, '0');
 
             // Raycaster Setup
             this.raycaster = new THREE.Raycaster();
@@ -506,12 +460,8 @@
             this.frameCount++;
             const now = Date.now();
             if (now - this.lastFrameTime >= 1000) {
-              document.getElementById('fps-counter').innerText = this.frameCount;
               this.frameCount = 0;
               this.lastFrameTime = now;
-              
-              // Clock
-              document.getElementById('clock').innerText = new Date().toISOString().split('T')[1].split('.')[0] + " Z";
             }
           }
         };
@@ -545,7 +495,7 @@
         this.raycaster.setFromCamera(mouse, this.camera);
         // This fails usually because camera.worldMatrix is identity.
         
-        // FIX: We manually unproject.
+// Fix: We manually unproject.
         // 1. Get inverse of view-projection matrix
         const inverseProj = new THREE.Matrix4().copy(this.camera.projectionMatrix).invert();
         

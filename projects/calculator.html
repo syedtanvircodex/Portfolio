@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes"/>
-  <title>Calculator | Tanvir Style</title>
+  <title>Calculator</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -17,9 +17,9 @@
       --bg-glass: rgba(17, 24, 39, 0.75);
       --key-bg: rgba(255, 255, 255, 0.04);
       --key-hover: rgba(255, 255, 255, 0.1);
-      --primary: #8b5cf6;
-      --secondary: #06b6d4;
-      --accent: #f472b6;
+      --primary: #2563eb;
+      --secondary: #1e40af;
+      --accent: #3b82f6;
       --text-main: #f8fafc;
       --text-muted: #94a3b8;
       --border-color: rgba(255, 255, 255, 0.08);
@@ -46,7 +46,7 @@
       position: fixed;
       width: 420px;
       height: 420px;
-      background: radial-gradient(circle, rgba(139,92,246,0.12) 0%, transparent 70%);
+      background: radial-gradient(circle, rgba(37,99,235,0.12) 0%, transparent 70%);
       border-radius: 50%;
       top: -140px;
       left: -120px;
@@ -60,7 +60,7 @@
       bottom: -140px;
       left: auto;
       right: -120px;
-      background: radial-gradient(circle, rgba(6,182,212,0.12) 0%, transparent 70%);
+      background: radial-gradient(circle, rgba(30,64,175,0.12) 0%, transparent 70%);
       animation: float 15s infinite ease-in-out reverse;
     }
     @keyframes float {
@@ -138,10 +138,10 @@
     button.key.op { color: var(--primary); font-family: var(--font-head); font-weight: 700; }
     button.key.clear { color: var(--accent); background: rgba(244,114,182,0.05); }
     button.key.equal {
-      background: linear-gradient(135deg, var(--secondary), var(--primary));
+      background: var(--primary);
       color: white; font-weight: 700; border: none;
     }
-    button.key.equal:hover { box-shadow: 0 0 20px rgba(139,92,246,0.28); }
+    button.key.equal:hover { box-shadow: 0 0 20px rgba(37,99,235,0.28); }
 
     button.key.zero { grid-column: span 2; aspect-ratio: 2 / 1; }
     button.key:focus { outline: 3px solid rgba(139,92,246,0.18); outline-offset: 2px; }

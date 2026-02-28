@@ -38,6 +38,16 @@
 
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; user-select: none; }
         
+        html {
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            overflow: hidden;
+        }
+        
+        html::-webkit-scrollbar {
+            display: none;
+        }
+        
         body {
             background-color: var(--bg-base);
             color: var(--text-primary);
@@ -112,9 +122,14 @@
             transform: translateY(20px);
             transition: opacity 0.4s var(--ease-out), transform 0.4s var(--ease-out);
             overflow-y: auto;
-            scrollbar-width: none; 
+            scrollbar-width: none;
+            -ms-overflow-style: none;
         }
-        .view::-webkit-scrollbar { display: none; }
+        .view::-webkit-scrollbar { 
+            display: none;
+            width: 0;
+            background: transparent;
+        }
         .view.active { opacity: 1; pointer-events: all; transform: translateY(0); z-index: 2; }
 
         h1 { font-family: var(--font-head); font-size: 2.2rem; margin-bottom: 0.5rem; line-height: 1.1; }
@@ -166,8 +181,15 @@
 
         .review-box { 
             background: rgba(0,0,0,0.2); border-radius: 16px; padding: 20px; 
-            margin-bottom: 24px; max-height: 300px; overflow-y: auto; 
+            margin-bottom: 24px; max-height: 300px; overflow-y: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
             border: 1px solid rgba(255,255,255,0.05);
+        }
+        .review-box::-webkit-scrollbar {
+            display: none;
+            width: 0;
+            background: transparent;
         }
         .review-item { 
             padding-bottom: 12px; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); 
