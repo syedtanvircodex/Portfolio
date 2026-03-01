@@ -8,7 +8,7 @@
 
 ## 🔗 Live Portfolio
 
-**[[syedtanvir.netlify.app](https://syedtanvircodex.github.io/Portfolio/)](https://syedtanvircodex.github.io/Portfolio/)** — Explore the live portfolio
+**[[syedtanvircodex.github.io/Portfolio](https://syedtanvircodex.github.io/Portfolio/)]** — Explore the live portfolio
 
 ---
 
@@ -31,32 +31,32 @@
 ### 1. **MrPremium** — E-Commerce Store
 A high-conversion digital goods storefront with clean shopping experience and zero friction.
 - **Tech:** HTML5, CSS3, JavaScript, Firebase
-- **Demo:** [Live Store](https://syedtanvir.netlify.app/projects/MrPremiumApp/)
+- **Demo:** [Live Store](https://syedtanvircodex.github.io/Portfolio/projects/MrPremiumApp/)
 
 ### 2. **DebateAI** — AI-Powered Debate Arena  
 Real-time debate platform with AI integration, structured rounds, and argument scoring.
 - **Tech:** AI API Integration, Real-time Logic
-- **Demo:** [Join Debate](https://syedtanvir.netlify.app/projects/Debate-AI/debate-arena.html)
+- **Demo:** [Join Debate](https://syedtanvircodex.github.io/Portfolio/projects/Debate-AI/debate-arena.html)
 
 ### 3. **TanvirAI** — Conversational AI Chat Interface
 Real-time chat interface with markdown rendering, async message processing, and polished UX.
 - **Tech:** API Integration, Async JavaScript, Markdown Engine
-- **Demo:** [Start Chat](https://syedtanvir.netlify.app/projects/tanvirai.html)
+- **Demo:** [Start Chat](https://syedtanvircodex.github.io/Portfolio/projects/tanvirai.html)
 
 ### 4. **3D Map** — Advanced Real-Time Visualization
 Interactive 3D map with vehicle visualization and real-time controls.
 - **Tech:** Three.js, MapLibre GL, 3D Graphics  
-- **Demo:** [Explore Map](https://syedtanvir.netlify.app/projects/3d-map.html)
+- **Demo:** [Explore Map](https://syedtanvircodex.github.io/Portfolio/projects/3d-map.html)
 
 ### 5. **Interactive Quiz** — Quiz Engine with Scoring
 Quiz platform with local storage, countdown timers, and real-time scoring.
 - **Tech:** ES6+ JavaScript, DOM Manipulation, Local Storage
-- **Demo:** [Play Now](https://syedtanvir.netlify.app/projects/quiz.html)
+- **Demo:** [Play Now](https://syedtanvircodex.github.io/Portfolio/projects/quiz.html)
 
 ### 6. **Real-Time Weather** — Location-Based Weather App
 Live weather application with geolocation and real-time API data.
 - **Tech:** Weather API, Geolocation API, Real-Time Data
-- **Demo:** [Check Weather](https://syedtanvir.netlify.app/projects/weather.html)
+- **Demo:** [Check Weather](https://syedtanvircodex.github.io/Portfolio/projects/weather.html)
 
 ---
 
@@ -189,7 +189,7 @@ Let's connect! Find me on:
 - **Email** — [syedtanvirislam20@gmail.com](mailto:syedtanvirislam20@gmail.com)
 - **GitHub** — [@syedtanvircodex](https://github.com/syedtanvircodex)
 - **Discord** — [Dokja](https://discord.com/users/1392841948498493451)
-- **Live Portfolio** — [syedtanvir.netlify.app](https://syedtanvir.netlify.app/)
+- **Live Portfolio** — [syedtanvircodex.github.io/Portfolio](https://syedtanvircodex.github.io/Portfolio)
 
 ---
 
