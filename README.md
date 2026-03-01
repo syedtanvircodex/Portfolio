@@ -8,7 +8,7 @@
 
 ## 🔗 Live Portfolio
 
-**[syedtanvir.netlify.app](https://syedtanvir.netlify.app/)** — Explore the live portfolio
+**[[syedtanvir.netlify.app](https://syedtanvircodex.github.io/Portfolio/)](https://syedtanvircodex.github.io/Portfolio/)** — Explore the live portfolio
 
 ---
 
