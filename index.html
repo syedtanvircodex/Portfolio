@@ -1146,6 +1146,20 @@
       margin-top: 2px;
     }
 
+    .c-link:last-child {
+      grid-column: 1 / -1;
+      justify-self: center;
+      width: 260px;
+    }
+
+    @media (max-width: 900px) {
+      .c-link:last-child {
+        grid-column: auto;
+        justify-self: auto;
+        width: 100%;
+      }
+    }
+
     /* ── FOOTER ── */
     footer {
       padding: 60px 40px;
@@ -1599,7 +1613,7 @@
       <div class="hero-orb orb-b"></div>
 
       <div class="hero-content">
-        <div class="hero-eyebrow">16 years old &mdash; zero shortcuts</div>
+        <div class="hero-eyebrow">17 years old &mdash; zero shortcuts</div>
         <h1 class="hero-title">
           Crafting the web<br>
           <em>the world deserves.</em>
@@ -1618,6 +1632,12 @@
                 d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
             </svg>
             GitHub
+          </a>
+          <a href="https://linktr.ee/tanvir.onair" target="_blank" rel="noopener" class="btn-pill btn-ghost">
+            <svg width="17" height="17" viewBox="0 0 80 97.7" fill="currentColor">
+              <path d="M0.2,33.1h24.2L7.1,16.7l9.5-9.6L33,23.8V0h14.2v23.8L63.6,7.1l9.5,9.6L55.8,33H80v13.5H55.7l17.3,16.7l-9.5,9.4L40,49.1L16.5,72.7L7,63.2l17.3-16.7H0V33.1H0.2z M33.1,65.8h14.2v32H33.1V65.8z" />
+            </svg>
+            Linktree
           </a>
         </div>
       </div>
@@ -1741,7 +1761,7 @@
       <div class="about-grid">
         <div class="about-bio" style="transition-delay: 80ms">
           <strong>I build systems,</strong> not just websites. From AI interfaces to 3D visualizations to real-time
-          applications, I tackle complex problems that most people avoid at 16.
+          applications, I tackle complex problems that most people avoid at 17.
         </div>
         <div class="about-right">
           <div class="milestones rv" style="transition-delay: 120ms">
@@ -1754,7 +1774,7 @@
               <div class="milestone-label">Unique tech stacks</div>
             </div>
             <div class="milestone">
-              <div class="milestone-num">16</div>
+              <div class="milestone-num">17</div>
               <div class="milestone-label">Years old</div>
             </div>
             <div class="milestone">
@@ -1938,6 +1958,17 @@
             <div class="c-link-info">
               <span class="c-link-name">Discord</span>
               <span class="c-link-handle">Dokja</span>
+            </div>
+          </a>
+          <a class="c-link" href="https://linktr.ee/tanvir.onair" target="_blank" rel="noopener noreferrer">
+            <div class="c-link-icon">
+              <svg width="17" height="17" viewBox="0 0 80 97.7" fill="currentColor">
+                <path d="M0.2,33.1h24.2L7.1,16.7l9.5-9.6L33,23.8V0h14.2v23.8L63.6,7.1l9.5,9.6L55.8,33H80v13.5H55.7l17.3,16.7l-9.5,9.4L40,49.1L16.5,72.7L7,63.2l17.3-16.7H0V33.1H0.2z M33.1,65.8h14.2v32H33.1V65.8z" />
+              </svg>
+            </div>
+            <div class="c-link-info">
+              <span class="c-link-name">Linktree</span>
+              <span class="c-link-handle">tanvir.onair</span>
             </div>
           </a>
         </div>
@@ -2289,13 +2320,13 @@
 
     // System prompt with rules
     const systemPrompt =
-      `You are Tanvir's AI assistant. Tanvir is a 16-year-old self-taught Front-End Developer from Bangladesh.
+      `You are Tanvir's AI assistant. Tanvir is a 17-year-old self-taught Front-End Developer from Bangladesh.
 
 CRITICAL RULES - FOLLOW STRICTLY:
 
 1. BASIC INFO QUESTIONS (name, age, location, phone, email):
    - Full Name: Syed Tanvir Islam
-   - Age: 16 years old
+   - Age: 17 years old
    - Location: Dhaka, Bangladesh
    - Phone: +880 1921575251
    - Email: syedtanvirislam20@gmail.com
@@ -2310,7 +2341,7 @@ CRITICAL RULES - FOLLOW STRICTLY:
    - If asked about something outside this list, say: "I haven't worked with that. My current focus is on [list relevant stack]. Check out my Tech Stack section to see what I actually use!"
 
 4. JOB OFFERS/MONEY/SPONSORSHIP:
-   Respond: "Thanks for the opportunity! I'm currently 16 years old, so I can't take paid positions. However, I'm always open to exciting projects or collaborations! Feel free to reach out through my contact page or socials to discuss potential projects."
+   Respond: "Thanks for the opportunity! I'm currently 17 years old, so I can't take paid positions. However, I'm always open to exciting projects or collaborations! Feel free to reach out through my contact page or socials to discuss potential projects."
 
 5. IRRELEVANT/OFF-TOPIC/SPAM:
    Keep responses professional and redirect to Tanvir's work/portfolio. Example: "That's interesting! But I'm here to talk about my work and projects. Want to know about my tech stack or recent projects?"
